@@ -5,13 +5,14 @@
  * Update status di sini saat halaman selesai di-review / BE sudah implement.
  */
 export const PAGE_STATUS_MAP = {
-  '/admin.html':     'progress',
-  '/login.html':     'progress',
-  '/register.html':  'progress',
-  '/home.html':      'progress',
-  '/index.html':     'progress',
-  '/splash.html':    'progress',
-  '/welcome.html':   'progress',
+  '/admin.html':        'progress',
+  '/login.html':        'progress',
+  '/register.html':     'progress',
+  '/home.html':         'progress',
+  '/index.html':        'progress',
+  '/splash.html':       'progress',
+  '/welcome.html':      'progress',
+  '/calculator.html':   'progress',
 };
 
 export const STATUS_META = {

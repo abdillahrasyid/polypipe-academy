@@ -1,9 +1,12 @@
-import * as UsersMock from '../mocks/users.js';
+import * as UsersMock      from '../mocks/users.js';
+import * as CalculatorMock from '../mocks/calculator.js';
 
 const USE_MOCK    = () => window.USE_MOCK !== false;
 const API_BASE    = () => window.API_BASE_URL ?? '/api/v1';
 
 const MOCK_ROUTES = [
+  { method: 'GET',  pattern: /^\/api\/v1\/calculator\/options$/, handler: () => CalculatorMock.mockGetCalculatorOptions() },
+  { method: 'POST', pattern: /^\/api\/v1\/calculator$/,          handler: (_m, body) => CalculatorMock.mockSubmitCalculator(body) },
   { method: 'GET',    pattern: /^\/api\/v1\/users\/([^/]+)\/status$/,  handler: null },
   { method: 'PATCH',  pattern: /^\/api\/v1\/users\/([^/]+)\/status$/,  handler: async (m, body) => UsersMock.mockUpdateUserStatus(m[1], body.status) },
   { method: 'GET',    pattern: /^\/api\/v1\/users\/([^/]+)$/,           handler: (m) => UsersMock.mockGetUser(m[1]) },

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <meta name="use-mock" content="true" />
+  <meta name="api-base-url" content="/api/v1" />
+  <script>
+    window.USE_MOCK   = document.querySelector('meta[name="use-mock"]')?.content === 'true';
+    window.API_BASE_URL = document.querySelector('meta[name="api-base-url"]')?.content ?? '/api/v1';
+  </script>
+
+  <style>
+    body { background: var(--gray-50); overflow-y: auto; }
+
+    /* ── Proto banner ── */
+    .proto-banner {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #1d4ed8; color: #fff;
+      font-size: 11px; font-weight: 500;
+      text-align: center; padding: 4px 12px;
+      z-index: 9999; font-family: 'Inter', sans-serif;
+      display: none;
+    }
+    .proto-banner.visible { display: block; }
+    body.has-banner .calc-header { padding-top: 65px; }
+
+    /* ── Header ── */
+    .calc-header {
+      background: var(--prime-500);
+      padding: 52px 24px 24px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0;
+    }
+    .calc-header-title { font-size: 24px; font-weight: 600; color: #fff; line-height: 32px; }
+
+    /* ── Form body ── */
+    .calc-body { padding: 24px; display: flex; flex-direction: column; gap: 0; }
+    .field-section { display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── Field ── */
+    .field-group { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .field-label {
+      font-size: 14px; font-weight: 400; color: var(--gray-800);
+      display: flex; gap: 2px; flex-wrap: wrap; line-height: 20px;
+    }
+    .field-label .req { color: var(--error-500); }
+
+    /* ── Plain text input ── */
+    .field-input {
+      width: 100%; padding: 12px 14px;
+      border: 1px solid var(--gray-300); border-radius: 8px;
+      background: #fff; font-size: 16px; font-weight: 400;
+      color: var(--gray-800); font-family: 'Inter', sans-serif;
+      transition: border-color .15s;
+    }
+    .field-input::placeholder { color: var(--gray-400); font-size: 14px; }
+    .field-input:focus { outline: none; border-color: var(--prime-500); }
+    .field-input.error { border-color: var(--error-500); }
+
+    /* ── Select ── */
+    .select-wrap { position: relative; }
+    .select-wrap select {
+      width: 100%; padding: 12px 40px 12px 14px;
+      border: 1px solid var(--gray-300); border-radius: 8px;
+      background: #fff; font-size: 16px; font-weight: 400;
+      color: var(--gray-800); font-family: 'Inter', sans-serif;
+      appearance: none; cursor: pointer;
+      transition: border-color .15s;
+    }
+    .select-wrap select:focus { outline: none; border-color: var(--prime-500); }
+    .select-wrap select.placeholder { color: var(--gray-400); }
+    .select-wrap select.error { border-color: var(--error-500); }
+    .select-arrow {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%); pointer-events: none;
+      width: 20px; height: 20px; color: var(--gray-400);
+    }
+
+    /* ── Unit toggle ── */
+    .unit-row { display: flex; gap: 12px; align-items: stretch; }
+    .unit-btn {
+      flex: 0 0 auto; padding: 12px 14px; min-width: 72px;
+      border-radius: 8px; border: 1px solid var(--gray-300);
+      background: #fff; font-size: 16px; font-weight: 400;
+      color: var(--gray-700); cursor: pointer;
+      font-family: 'Inter', sans-serif; text-align: center;
+      transition: background .15s, border-color .15s;
+    }
+    .unit-btn.active { background: #e7ecf4; border-color: var(--prime-500); }
+    .unit-btn sup { font-size: 10px; vertical-align: super; line-height: 0; }
+    .unit-input-flex { flex: 1 1 0; min-width: 0; }
+
+    /* ── Time unit toggle ── */
+    .time-unit-row { display: flex; gap: 12px; }
+    .time-unit-btn {
+      flex: 1; padding: 12px 14px;
+      border-radius: 8px; border: 1px solid var(--gray-300);
+      background: #fff; font-size: 16px; font-weight: 400;
+      color: var(--gray-700); cursor: pointer;
+      font-family: 'Inter', sans-serif; text-align: center;
+      transition: background .15s, border-color .15s;
+    }
+    .time-unit-btn.active { background: #e7ecf4; border-color: var(--prime-500); }
+
+    /* ── Computed (Ketebalan) ── */
+    .computed-container {
+      background: #f1f8ff; border: 1px solid #b3d7fb;
+      border-radius: 12px; padding: 12px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .computed-label { font-size: 14px; font-weight: 400; color: var(--gray-800); }
+    .computed-value {
+      background: var(--prime-500); border: 1px solid var(--prime-500);
+      border-radius: 8px; padding: 12px 14px;
+      text-align: center; font-size: 18px; font-weight: 500;
+      color: #fff; line-height: 28px;
+    }
+
+    /* ── Section divider ── */
+    .calc-divider { height: 1px; background: var(--gray-200); margin: 24px 0; }
+
+    /* ── Warning ── */
+    .field-warning { display: flex; gap: 6px; align-items: flex-start; }
+    .field-warning-icon {
+      flex-shrink: 0; width: 14px; height: 14px; margin-top: 2px;
+    }
+    .field-warning-text { font-size: 12px; color: var(--gray-600); line-height: 18px; }
+
+    /* ── Inline error ── */
+    .field-error { font-size: 12px; color: var(--error-500); display: none; }
+    .field-error.visible { display: block; }
+
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%; height: 48px;
+      background: var(--prime-600); color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 16px; font-weight: 600;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity .15s; margin-top: 40px;
+    }
+    .btn-submit:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-submit:active:not(:disabled) { opacity: .85; }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .7s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-label { display: none; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 80px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--gray-800); color: #fff;
+      padding: 10px 20px; border-radius: 8px;
+      font-size: 14px; font-weight: 500;
+      opacity: 0; transition: opacity .3s, transform .3s;
+      z-index: 100; white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+      max-width: calc(100% - 48px); text-align: center;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--done-500); }
+    .toast.error   { background: var(--error-500); }
+
+    /* ── Animations ── */
+    .calc-header  { animation: fadeIn .3s ease both; }
+    .calc-body    { animation: fadeIn .35s .1s ease both; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+    .field-input.shake, .select-wrap select.shake { animation: shake .2s ease; }
+  </style>
+</head>
+<body>
+
+<!-- Prototype banner -->
+<div class="proto-banner" id="proto-banner" aria-live="polite">🧪 PROTOTYPE — Mock active</div>
+
+<!-- SVG sprites -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="ico-arrow-left" viewBox="0 0 24 24">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+  </symbol>
+  <symbol id="ico-chevron-down" viewBox="0 0 20 20" fill="none">
+    <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="ico-warning" viewBox="0 0 14 14" fill="none">
+    <path d="M6.08 2.07 1.12 10.5c-.38.66.09 1.5.86 1.5h9.92c.77 0 1.24-.84.86-1.5L7.8 2.07a1 1 0 0 0-1.72 0z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+    <path d="M7 5.5v2.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+    <circle cx="7" cy="9.75" r=".75" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<!-- ── Header ─────────────────────────────────────── -->
+<header class="calc-header">
+  <button class="btn-back" onclick="history.back()" aria-label="Kembali ke halaman sebelumnya">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><use href="#ico-arrow-left"/></svg>
+  </button>
+  <h1 class="calc-header-title">Calculator</h1>
+</header>
+
+<!-- ── Form ───────────────────────────────────────── -->
+<main class="calc-body">
+  <form id="calc-form" novalidate aria-label="Form input data kalkulator">
+
+    <div class="field-section">
+
+      <!-- Machine (opsional) -->
+      <div class="field-group">
+        <label class="field-label" for="machine">Machine</label>
+        <input class="field-input" type="text" id="machine" name="machine"
+               placeholder="Masukkan nama mesin"
+               autocomplete="off" />
+      </div>
+
+      <!-- Piston Area -->
+      <div class="field-group">
+        <div class="field-label" id="piston-area-label">
+          Piston Area<span class="req" aria-label="wajib">*</span>
+        </div>
+        <div class="unit-row" role="group" aria-labelledby="piston-area-label">
+          <button type="button" class="unit-btn active" id="btn-unit-cm2"
+                  onclick="selectUnit('CM2')"
+                  aria-pressed="true"
+                  aria-label="Pilih satuan CM kuadrat">CM<sup>2</sup></button>
+          <button type="button" class="unit-btn" id="btn-unit-mm2"
+                  onclick="selectUnit('MM2')"
+                  aria-pressed="false"
+                  aria-label="Pilih satuan MM kuadrat">MM<sup>2</sup></button>
+          <div class="unit-input-flex">
+            <input class="field-input" type="number" id="piston-area" name="pistonArea"
+                   placeholder="input angka, tidak dapat desimal"
+                   min="1" step="1"
+                   aria-required="true"
+                   aria-describedby="piston-area-error"
+                   aria-labelledby="piston-area-label" />
+          </div>
+        </div>
+        <span class="field-error" id="piston-area-error" role="alert"></span>
+      </div>
+
+      <!-- Pilih Standard Metode Welding -->
+      <div class="field-group">
+        <div class="field-label" id="lbl-welding">
+          Pilih Standard Metode Welding<span class="req" aria-label="wajib">*</span>
+        </div>
+        <div class="select-wrap">
+          <select id="welding-standard" name="weldingStandard"
+                  class="placeholder"
+                  aria-required="true"
+                  aria-describedby="welding-standard-error"
+                  aria-labelledby="lbl-welding"
+                  onchange="this.classList.remove('placeholder')">
+            <option value="" disabled selected>Pilih salah satu</option>
+            <option value="DVS2207-1">DVS 2207-1</option>
+            <option value="ISO21307">ISO 21307</option>
+            <option value="ASTMF2620">ASTM F2620</option>
+            <option value="EN12201">EN 12201</option>
+            <option value="SNI7058">SNI 7058</option>
+          </select>
+          <svg class="select-arrow" aria-hidden="true"><use href="#ico-chevron-down"/></svg>
+        </div>
+        <span class="field-error" id="welding-standard-error" role="alert"></span>
+      </div>
+
+      <!-- Material Pipa -->
+      <div class="field-group">
+        <div class="field-label" id="lbl-material">
+          Material Pipa<span class="req" aria-label="wajib">*</span>
+        </div>
+        <div class="select-wrap">
+          <select id="material-pipa" name="materialPipa"
+                  class="placeholder"
+                  aria-required="true"
+                  aria-describedby="material-pipa-error"
+                  aria-labelledby="lbl-material"
+                  onchange="this.classList.remove('placeholder')">
+            <option value="" disabled selected>Pilih salah satu</option>
+            <option value="PE100">PE100</option>
+            <option value="PE80">PE80</option>
+            <option value="PPR">PP-R</option>
+            <option value="PVDF">PVDF</option>
+          </select>
+          <svg class="select-arrow" aria-hidden="true"><use href="#ico-chevron-down"/></svg>
+        </div>
+        <span class="field-error" id="material-pipa-error" role="alert"></span>
+      </div>
+
+    </div><!-- /field-section -->
+
+    <div class="calc-divider" role="separator"></div>
+
+    <div class="field-section">
+
+      <!-- Diameter Luar -->
+      <div class="field-group">
+        <div class="field-label" id="lbl-diameter">
+          Diameter Luar<span class="req" aria-label="wajib">*</span>
+        </div>
+        <div class="select-wrap">
+          <select id="diameter-luar" name="diameterLuar"
+                  class="placeholder"
+                  aria-required="true"
+                  aria-describedby="diameter-luar-error"
+                  aria-labelledby="lbl-diameter"
+                  onchange="this.classList.remove('placeholder'); updateKetebalan()">
+            <option value="" disabled selected>Pilih salah satu</option>
+            <option value="20">20 mm</option>
+            <option value="25">25 mm</option>
+            <option value="32">32 mm</option>
+            <option value="40">40 mm</option>
+            <option value="50">50 mm</option>
+            <option value="63">63 mm</option>
+            <option value="75">75 mm</option>
+            <option value="90">90 mm</option>
+            <option value="110">110 mm</option>
+            <option value="125">125 mm</option>
+            <option value="160">160 mm</option>
+            <option value="200">200 mm</option>
+            <option value="250">250 mm</option>
+            <option value="315">315 mm</option>
+          </select>
+          <svg class="select-arrow" aria-hidden="true"><use href="#ico-chevron-down"/></svg>
+        </div>
+        <span class="field-error" id="diameter-luar-error" role="alert"></span>
+      </div>
+
+      <!-- SDR -->
+      <div class="field-group">
+        <div class="field-label" id="lbl-sdr">
+          SDR (Standar Dimensi Rasio)<span class="req" aria-label="wajib">*</span>
+        </div>
+        <div class="select-wrap">
+          <select id="sdr" name="sdr"
+                  class="placeholder"
+                  aria-required="true"
+                  aria-describedby="sdr-error"
+                  aria-labelledby="lbl-sdr"
+                  onchange="this.classList.remove('placeholder'); updateKetebalan()">
+            <option value="" disabled selected>Pilih salah satu</option>
+            <option value="6">SDR 6</option>
+            <option value="7.4">SDR 7.4</option>
+            <option value="9">SDR 9</option>
+            <option value="11">SDR 11</option>
+            <option value="13.6">SDR 13.6</option>
+            <option value="17">SDR 17</option>
+            <option value="21">SDR 21</option>
+            <option value="26">SDR 26</option>
+          </select>
+          <svg class="select-arrow" aria-hidden="true"><use href="#ico-chevron-down"/></svg>
+        </div>
+        <span class="field-error" id="sdr-error" role="alert"></span>
+      </div>
+
+      <!-- Ketebalan (computed) -->
+      <div class="computed-container" role="region" aria-label="Hasil kalkulasi ketebalan">
+        <p class="computed-label">Ketebalan</p>
+        <div class="computed-value" id="ketebalan-value"
+             aria-live="polite"
+             aria-atomic="true"
+             aria-label="Ketebalan dinding pipa">
+          — mm
+        </div>
+      </div>
+
+    </div><!-- /field-section -->
+
+    <div class="calc-divider" role="separator"></div>
+
+    <div class="field-section">
+
+      <!-- Drag Pressure -->
+      <div class="field-group">
+        <div class="field-label" id="lbl-drag">
+          Drag Preasure (Pt)<span class="req" aria-label="wajib">*</span>
+        </div>
+        <div class="select-wrap">
+          <select id="drag-pressure" name="dragPressure"
+                  class="placeholder"
+                  aria-required="true"
+                  aria-describedby="drag-pressure-error drag-pressure-warning"
+                  aria-labelledby="lbl-drag"
+                  onchange="this.classList.remove('placeholder'); checkDragWarning()">
+            <option value="" disabled selected>Pilih salah satu</option>
+            <option value="1">1 bar</option>
+            <option value="2">2 bar</option>
+            <option value="3">3 bar</option>
+            <option value="4">4 bar</option>
+            <option value="5">5 bar</option>
+            <option value="6">6 bar</option>
+            <option value="7">7 bar</option>
+            <option value="8">8 bar</option>
+            <option value="9">9 bar</option>
+            <option value="10">10 bar</option>
+            <option value="12">12 bar</option>
+            <option value="15">15 bar</option>
+          </select>
+          <svg class="select-arrow" aria-hidden="true"><use href="#ico-chevron-down"/></svg>
+        </div>
+        <span class="field-error" id="drag-pressure-error" role="alert"></span>
+        <div class="field-warning" id="drag-pressure-warning" role="alert" aria-live="assertive" style="display:none">
+          <svg class="field-warning-icon" aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <use href="#ico-warning" stroke="var(--warning-500)"/>
+          </svg>
+          <p class="field-warning-text">Peringatan: Tekanan drag mencapai 10 bar. Disarankan untuk tidak melanjutkan proses. Jika tetap dipaksakan, mesin berisiko mengalami kerusakan. Info lebih lanjut, hubungi manufaktur mesin.</p>
+        </div>
+      </div>
+
+      <!-- Suhu Ruangan -->
+      <div class="field-group">
+        <div class="field-label" id="lbl-suhu">
+          Suhu Ruangan<span class="req" aria-label="wajib">*</span>
+        </div>
+        <div class="select-wrap">
+          <select id="suhu-ruangan" name="suhuRuangan"
+                  class="placeholder"
+                  aria-required="true"
+                  aria-describedby="suhu-ruangan-error suhu-ruangan-warning"
+                  aria-labelledby="lbl-suhu"
+                  onchange="this.classList.remove('placeholder'); checkSuhuWarning()">
+            <option value="" disabled selected>Pilih salah satu</option>
+            <option value="below10">&lt; 10°C</option>
+            <option value="10to20">10°C – 20°C</option>
+            <option value="21to30">21°C – 30°C</option>
+            <option value="31to40">31°C – 40°C</option>
+            <option value="above40">&gt; 40°C</option>
+          </select>
+          <svg class="select-arrow" aria-hidden="true"><use href="#ico-chevron-down"/></svg>
+        </div>
+        <span class="field-error" id="suhu-ruangan-error" role="alert"></span>
+        <div class="field-warning" id="suhu-ruangan-warning" role="alert" aria-live="assertive" style="display:none">
+          <svg class="field-warning-icon" aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <use href="#ico-warning" stroke="var(--warning-500)"/>
+          </svg>
+          <p class="field-warning-text">Peringatan: suhu ruangan terlalu rendah/tinggi, sesuaikan suhu ruangan di ambient temperature. Info lebih lanjut hubungi manufaktur pipa.</p>
+        </div>
+      </div>
+
+      <!-- Satuan Waktu -->
+      <div class="field-group">
+        <div class="field-label" id="lbl-waktu">
+          Satuan Waktu<span class="req" aria-label="wajib">*</span>
+        </div>
+        <div class="time-unit-row" role="group" aria-labelledby="lbl-waktu">
+          <button type="button" class="time-unit-btn active" id="btn-waktu-detik"
+                  onclick="selectSatuanWaktu('Detik')"
+                  aria-pressed="true">Detik</button>
+          <button type="button" class="time-unit-btn" id="btn-waktu-menit"
+                  onclick="selectSatuanWaktu('Menit')"
+                  aria-pressed="false">Menit</button>
+        </div>
+      </div>
+
+    </div><!-- /field-section -->
+
+    <!-- Submit -->
+    <button type="submit" class="btn-submit" id="btn-submit" aria-live="polite">
+      <span class="btn-label">Simpan</span>
+      <div class="spinner" aria-hidden="true"></div>
+    </button>
+
+  </form>
+</main>
+
+<!-- Footer -->
+<footer class="footer-bar">
+  <span class="footer-copy">© 2026 polypipe.id academy</span>
+  <div class="footer-logo">
+    <div class="footer-logo-text">
+      <span class="t1">POLYPIPE.id</span>
+      <span class="t2">ACADEMY</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  /* ── State ──────────────────────────────────────── */
+  let selectedUnit       = 'CM2';
+  let selectedSatuanWaktu = 'Detik';
+
+  const DRAG_WARN_THRESHOLD  = 10;
+  const SUHU_WARN_VALUES     = new Set(['below10', 'above40']);
+
+  /* ── Mock Fetch Override ─────────────────────────── */
+  if (window.USE_MOCK) {
+    const _orig = window.fetch.bind(window);
+    window.fetch = async function(input, init = {}) {
+      const url    = typeof input === 'string' ? input : input.url;
+      const method = (init.method || 'GET').toUpperCase();
+
+      if (!url.startsWith('/api/v1/calculator')) return _orig(input, init);
+
+      const delay = ms => new Promise(r => setTimeout(r, ms));
+      const body  = init.body ? JSON.parse(init.body) : {};
+
+      if (method === 'POST' && url === '/api/v1/calculator') {
+        console.info('[MOCK] POST /api/v1/calculator', body);
+        await delay(600 + Math.random() * 400);
+        if (Math.random() < 0.05) {
+          return new Response(
+            JSON.stringify({ error: 'Server error sementara, coba lagi.' }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        return new Response(
+          JSON.stringify({ data: { id: `calc-${Date.now()}`, ...body, createdAt: new Date().toISOString() } }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
+      return _orig(input, init);
+    };
+
+    /* Show banner */
+    const banner = document.getElementById('proto-banner');
+    banner.classList.add('visible');
+    document.body.classList.add('has-banner');
+
+    /* Status triangle */
+    const tri = document.createElement('div');
+    tri.style.cssText = 'position:fixed;top:0;left:0;z-index:10000;width:56px;height:56px;clip-path:polygon(0 0,100% 0,0 100%);background:#f59e0b;cursor:pointer;';
+    tri.title = 'In Progress';
+    let triLabel = null, triTimer = null;
+    tri.addEventListener('click', () => {
+      if (triLabel) { triLabel.remove(); triLabel = null; clearTimeout(triTimer); return; }
+      triLabel = Object.assign(document.createElement('div'), { textContent: 'In Progress' });
+      triLabel.style.cssText = 'position:fixed;top:6px;left:6px;z-index:10001;background:#f59e0b;color:#fff;font-family:Inter,sans-serif;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;pointer-events:none;';
+      document.body.appendChild(triLabel);
+      triTimer = setTimeout(() => { triLabel?.remove(); triLabel = null; }, 4000);
+    });
+    document.body.appendChild(tri);
+  }
+
+  /* ── Unit toggle ─────────────────────────────────── */
+  function selectUnit(unit) {
+    selectedUnit = unit;
+    const cm2 = document.getElementById('btn-unit-cm2');
+    const mm2 = document.getElementById('btn-unit-mm2');
+    cm2.classList.toggle('active', unit === 'CM2');
+    mm2.classList.toggle('active', unit === 'MM2');
+    cm2.setAttribute('aria-pressed', String(unit === 'CM2'));
+    mm2.setAttribute('aria-pressed', String(unit === 'MM2'));
+  }
+
+  /* ── Satuan Waktu toggle ─────────────────────────── */
+  function selectSatuanWaktu(val) {
+    selectedSatuanWaktu = val;
+    const detik = document.getElementById('btn-waktu-detik');
+    const menit = document.getElementById('btn-waktu-menit');
+    detik.classList.toggle('active', val === 'Detik');
+    menit.classList.toggle('active', val === 'Menit');
+    detik.setAttribute('aria-pressed', String(val === 'Detik'));
+    menit.setAttribute('aria-pressed', String(val === 'Menit'));
+  }
+
+  /* ── Ketebalan calculation ───────────────────────── */
+  function updateKetebalan() {
+    const od  = parseFloat(document.getElementById('diameter-luar').value);
+    const sdr = parseFloat(document.getElementById('sdr').value);
+    const el  = document.getElementById('ketebalan-value');
+    el.textContent = (od && sdr && sdr > 0) ? `${(od / sdr).toFixed(2)} mm` : '— mm';
+  }
+
+  /* ── Warning checks ──────────────────────────────── */
+  function checkDragWarning() {
+    const val  = parseFloat(document.getElementById('drag-pressure').value);
+    const warn = document.getElementById('drag-pressure-warning');
+    warn.style.display = (!isNaN(val) && val >= DRAG_WARN_THRESHOLD) ? 'flex' : 'none';
+  }
+
+  function checkSuhuWarning() {
+    const val  = document.getElementById('suhu-ruangan').value;
+    const warn = document.getElementById('suhu-ruangan-warning');
+    warn.style.display = SUHU_WARN_VALUES.has(val) ? 'flex' : 'none';
+  }
+
+  /* ── Validation ──────────────────────────────────── */
+  const FIELD_MAP = {
+    pistonArea:      { inputId: 'piston-area',       errorId: 'piston-area-error' },
+    weldingStandard: { inputId: 'welding-standard',  errorId: 'welding-standard-error' },
+    materialPipa:    { inputId: 'material-pipa',     errorId: 'material-pipa-error' },
+    diameterLuar:    { inputId: 'diameter-luar',     errorId: 'diameter-luar-error' },
+    sdr:             { inputId: 'sdr',               errorId: 'sdr-error' },
+    dragPressure:    { inputId: 'drag-pressure',     errorId: 'drag-pressure-error' },
+    suhuRuangan:     { inputId: 'suhu-ruangan',      errorId: 'suhu-ruangan-error' },
+  };
+
+  function validate(data) {
+    const errors = [];
+    const pistonVal = parseInt(data.pistonArea, 10);
+    if (!data.pistonArea || isNaN(pistonVal) || pistonVal <= 0)
+      errors.push({ path: 'pistonArea', message: 'Piston area wajib diisi dengan angka positif' });
+    else if (String(data.pistonArea).includes('.'))
+      errors.push({ path: 'pistonArea', message: 'Piston area tidak dapat desimal' });
+    if (!data.weldingStandard) errors.push({ path: 'weldingStandard', message: 'Pilih standard metode welding' });
+    if (!data.materialPipa)   errors.push({ path: 'materialPipa',    message: 'Pilih material pipa' });
+    if (!data.diameterLuar)   errors.push({ path: 'diameterLuar',    message: 'Pilih diameter luar' });
+    if (!data.sdr)            errors.push({ path: 'sdr',             message: 'Pilih SDR' });
+    if (!data.dragPressure)   errors.push({ path: 'dragPressure',    message: 'Pilih drag pressure' });
+    if (!data.suhuRuangan)    errors.push({ path: 'suhuRuangan',     message: 'Pilih suhu ruangan' });
+    return errors;
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.field-error').forEach(el => {
+      el.textContent = ''; el.classList.remove('visible');
+    });
+    document.querySelectorAll('.field-input, .select-wrap select').forEach(el => {
+      el.classList.remove('error');
+      el.removeAttribute('aria-invalid');
+    });
+  }
+
+  function showErrors(errors) {
+    clearErrors();
+    errors.forEach(({ path, message }) => {
+      const map = FIELD_MAP[path];
+      if (!map) return;
+      const inputEl = document.getElementById(map.inputId);
+      const errorEl = document.getElementById(map.errorId);
+      if (inputEl) {
+        inputEl.classList.add('error');
+        inputEl.setAttribute('aria-invalid', 'true');
+        void inputEl.offsetWidth;
+        inputEl.classList.add('shake');
+        inputEl.addEventListener('animationend', () => inputEl.classList.remove('shake'), { once: true });
+      }
+      if (errorEl) { errorEl.textContent = message; errorEl.classList.add('visible'); }
+    });
+  }
+
+  /* ── Toast ───────────────────────────────────────── */
+  function showToast(msg, type = '') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `toast ${type}`;
+    void el.offsetWidth;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 3000);
+  }
+
+  /* ── Form Submit ─────────────────────────────────── */
+  document.getElementById('calc-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const data = {
+      machine:         document.getElementById('machine').value.trim(),
+      pistonArea:      document.getElementById('piston-area').value,
+      pistonAreaUnit:  selectedUnit,
+      weldingStandard: document.getElementById('welding-standard').value,
+      materialPipa:    document.getElementById('material-pipa').value,
+      diameterLuar:    document.getElementById('diameter-luar').value,
+      sdr:             document.getElementById('sdr').value,
+      ketebalan:       document.getElementById('ketebalan-value').textContent,
+      dragPressure:    document.getElementById('drag-pressure').value,
+      suhuRuangan:     document.getElementById('suhu-ruangan').value,
+      satuanWaktu:     selectedSatuanWaktu,
+    };
+
+    const errors = validate(data);
+    if (errors.length) {
+      showErrors(errors);
+      document.querySelector('.field-error.visible')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    clearErrors();
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.classList.add('loading');
+    btn.setAttribute('aria-busy', 'true');
+
+    try {
+      const res = await fetch('/api/v1/calculator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Gagal menyimpan data');
+      }
+      showToast('Data berhasil disimpan!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Terjadi kesalahan, coba lagi.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.removeAttribute('aria-busy');
+    }
+  });
+</script>
+
+</body>
+</html>
