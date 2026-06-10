@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modul Materi — Polypipe Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo-box">P</div>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">POLYPIPE.id</span>
+        <span class="sidebar-brand-sub">Academy</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Utama</div>
+      <a href="admin.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="admin-users.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 17c0-3.314 2.686-6 6-6s6 2.686 6 6"/><path d="M13 3.5a3 3 0 010 5M18 17c0-2.761-2-5-4.5-5.5"/></svg>
+        Pengguna
+        <span class="nav-badge">3</span>
+      </a>
+      <a href="admin-modules.html" class="nav-item active">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h12v12H4z" rx="1"/><path d="M8 9h4M8 12h2"/><path d="M7 2v2M13 2v2"/></svg>
+        Modul Materi
+      </a>
+      <a href="admin-datamaster.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="10" cy="5" rx="7" ry="2.5"/><path d="M3 5v4c0 1.38 3.134 2.5 7 2.5S17 10.38 17 9V5"/><path d="M3 9v4c0 1.38 3.134 2.5 7 2.5S17 14.38 17 13V9"/></svg>
+        Data Master
+      </a>
+      <a href="admin-keuangan.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="16" height="11" rx="2"/><path d="M2 9h16"/><circle cx="6" cy="13" r="1" fill="currentColor"/></svg>
+        Keuangan
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Pengaturan</div>
+      <a href="admin-settings.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M15.78 4.22l-1.42 1.42M5.64 14.36l-1.42 1.42"/></svg>
+        Pengaturan
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar">AR</div>
+        <div class="user-info">
+          <div class="user-name">Admin Polypipe</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <button class="btn-logout" title="Keluar" onclick="logoutAdmin()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10H3M7 6l-4 4 4 4"/><path d="M10 3h5a1 1 0 011 1v12a1 1 0 01-1 1h-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN
+  ═══════════════════════════════════════════════ -->
+  <div class="main-wrap">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="topbar-btn" id="btn-mobile-menu" aria-label="Menu">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+        </button>
+        <div class="breadcrumb">
+          <a href="admin.html" class="breadcrumb-item" style="text-decoration:none;">Polypipe Academy</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Modul Materi</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" title="Notifikasi">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 00-6-6z"/><path d="M8 16a2 2 0 004 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="topbar-avatar" title="Admin Polypipe">AR</div>
+      </div>
+    </header>
+
+    <!-- ─────────────────────────────────────────────
+         PAGE: MODULES
+    ───────────────────────────────────────────── -->
+    <div class="page-content active" id="page-modules">
+      <div class="page-heading">
+        <div>
+          <h1 class="page-title">Modul Materi</h1>
+          <p class="page-subtitle">Kelola konten panduan pengelasan pipa HDPE.</p>
+        </div>
+        <button class="btn btn--primary">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 4v12M4 10h12"/></svg>
+          Tambah Modul
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Referensi Setting</div>
+          <span class="badge badge--green"><span class="badge-dot"></span>5 modul aktif</span>
+        </div>
+        <div class="module-list">
+          <div class="module-item">
+            <div class="module-num">01</div>
+            <div class="module-info">
+              <div class="module-name">Clamping Pipa</div>
+              <div class="module-meta">Terakhir diperbarui: 12 Mei 2026</div>
+            </div>
+            <span class="badge badge--green"><span class="badge-dot"></span>Aktif</span>
+            <div class="row-actions">
+              <button class="icon-btn" title="Edit">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 3l4 4-10 10H3v-4L13 3z"/></svg>
+              </button>
+              <button class="icon-btn delete" title="Hapus">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h14M8 6V4h4v2M6 6l1 11h6l1-11"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="module-item">
+            <div class="module-num">02</div>
+            <div class="module-info">
+              <div class="module-name">Facing</div>
+              <div class="module-meta">Terakhir diperbarui: 10 Mei 2026</div>
+            </div>
+            <span class="badge badge--green"><span class="badge-dot"></span>Aktif</span>
+            <div class="row-actions">
+              <button class="icon-btn" title="Edit"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 3l4 4-10 10H3v-4L13 3z"/></svg></button>
+              <button class="icon-btn delete" title="Hapus"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h14M8 6V4h4v2M6 6l1 11h6l1-11"/></svg></button>
+            </div>
+          </div>
+          <div class="module-item">
+            <div class="module-num">03</div>
+            <div class="module-info">
+              <div class="module-name">Alignment</div>
+              <div class="module-meta">Terakhir diperbarui: 8 Mei 2026</div>
+            </div>
+            <span class="badge badge--green"><span class="badge-dot"></span>Aktif</span>
+            <div class="row-actions">
+              <button class="icon-btn" title="Edit"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 3l4 4-10 10H3v-4L13 3z"/></svg></button>
+              <button class="icon-btn delete" title="Hapus"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h14M8 6V4h4v2M6 6l1 11h6l1-11"/></svg></button>
+            </div>
+          </div>
+          <div class="module-item">
+            <div class="module-num">04</div>
+            <div class="module-info">
+              <div class="module-name">Temperatur → Check Standard (2x Pengecekan)</div>
+              <div class="module-meta">Terakhir diperbarui: 5 Mei 2026</div>
+            </div>
+            <span class="badge badge--green"><span class="badge-dot"></span>Aktif</span>
+            <div class="row-actions">
+              <button class="icon-btn" title="Edit"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 3l4 4-10 10H3v-4L13 3z"/></svg></button>
+              <button class="icon-btn delete" title="Hapus"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h14M8 6V4h4v2M6 6l1 11h6l1-11"/></svg></button>
+            </div>
+          </div>
+          <div class="module-item">
+            <div class="module-num">05</div>
+            <div class="module-info">
+              <div class="module-name">Cleaning (Rekomendasi Alcohol 99.5% ISOPROPYL)</div>
+              <div class="module-meta">Terakhir diperbarui: 1 Mei 2026</div>
+            </div>
+            <span class="badge badge--green"><span class="badge-dot"></span>Aktif</span>
+            <div class="row-actions">
+              <button class="icon-btn" title="Edit"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 3l4 4-10 10H3v-4L13 3z"/></svg></button>
+              <button class="icon-btn delete" title="Hapus"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h14M8 6V4h4v2M6 6l1 11h6l1-11"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-wrap -->
+
+  <!-- Prototype banner -->
+  <div class="proto-banner" id="proto-banner">🧪 PROTOTYPE — Mock active</div>
+
+  <script>
+    document.getElementById('btn-mobile-menu').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    function logoutAdmin() {
+      localStorage.removeItem('__prototype_session');
+      window.location.href = 'login-admin.html';
+    }
+  </script>
+</body>
+</html>

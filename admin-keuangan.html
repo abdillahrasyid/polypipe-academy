@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keuangan — Polypipe Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <meta name="use-mock" content="true" />
+  <meta name="api-base-url" content="/api/v1" />
+  <script>
+    window.USE_MOCK = document.querySelector('meta[name="use-mock"]')?.content === 'true';
+    window.API_BASE_URL = document.querySelector('meta[name="api-base-url"]')?.content ?? '/api/v1';
+  </script>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo-box">P</div>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">POLYPIPE.id</span>
+        <span class="sidebar-brand-sub">Academy</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Utama</div>
+      <a href="admin.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="admin-users.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 17c0-3.314 2.686-6 6-6s6 2.686 6 6"/><path d="M13 3.5a3 3 0 010 5M18 17c0-2.761-2-5-4.5-5.5"/></svg>
+        Pengguna
+        <span class="nav-badge">3</span>
+      </a>
+      <a href="admin-modules.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h12v12H4z" rx="1"/><path d="M8 9h4M8 12h2"/><path d="M7 2v2M13 2v2"/></svg>
+        Modul Materi
+      </a>
+      <a href="admin-datamaster.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="10" cy="5" rx="7" ry="2.5"/><path d="M3 5v4c0 1.38 3.134 2.5 7 2.5S17 10.38 17 9V5"/><path d="M3 9v4c0 1.38 3.134 2.5 7 2.5S17 14.38 17 13V9"/></svg>
+        Data Master
+      </a>
+      <a href="admin-keuangan.html" class="nav-item active">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="16" height="11" rx="2"/><path d="M2 9h16"/><circle cx="6" cy="13" r="1" fill="currentColor"/></svg>
+        Keuangan
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Pengaturan</div>
+      <a href="admin-settings.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M15.78 4.22l-1.42 1.42M5.64 14.36l-1.42 1.42"/></svg>
+        Pengaturan
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar">AR</div>
+        <div class="user-info">
+          <div class="user-name">Admin Polypipe</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <button class="btn-logout" title="Keluar" onclick="logoutAdmin()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10H3M7 6l-4 4 4 4"/><path d="M10 3h5a1 1 0 011 1v12a1 1 0 01-1 1h-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN
+  ═══════════════════════════════════════════════ -->
+  <div class="main-wrap">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="topbar-btn" id="btn-mobile-menu" aria-label="Menu">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+        </button>
+        <div class="breadcrumb">
+          <a href="admin.html" class="breadcrumb-item" style="text-decoration:none;">Polypipe Academy</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Keuangan</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" title="Notifikasi">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 00-6-6z"/><path d="M8 16a2 2 0 004 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="topbar-avatar" title="Admin Polypipe">AR</div>
+      </div>
+    </header>
+
+    <!-- ─────────────────────────────────────────────
+         PAGE: KEUANGAN
+    ───────────────────────────────────────────── -->
+    <div class="page-content active" id="page-keuangan">
+
+      <div class="page-heading">
+        <div>
+          <h1 class="page-title">Keuangan</h1>
+          <p class="page-subtitle">Ringkasan pembayaran dan revenue Polypipe Academy.</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn--outline" onclick="exportPayments()">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3v10M6 9l4 4 4-4"/><path d="M3 16h14"/></svg>
+            Export Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- Revenue summary cards -->
+      <div class="rev-grid">
+        <div class="rev-card">
+          <div class="rev-card-top">
+            <span class="rev-label">Total Revenue</span>
+            <div class="rev-icon" style="background:#eff6ff;color:var(--prime-500);">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2v2m0 12v2M4.93 4.93l1.41 1.41m7.32 7.32 1.41 1.41M2 10h2m12 0h2M4.93 15.07l1.41-1.41m7.32-7.32 1.41-1.41"/><circle cx="10" cy="10" r="3"/></svg>
+            </div>
+          </div>
+          <div class="rev-value" id="keu-total-rev">Rp 0</div>
+          <div class="rev-change rev-change--up" id="keu-total-rev-change">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10l6-6 6 6"/></svg>
+            <span>—</span>
+          </div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-card-top">
+            <span class="rev-label">Revenue Bulan Ini</span>
+            <div class="rev-icon" style="background:#ecfdf5;color:var(--done-500);">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="14" height="13" rx="1.5"/><path d="M3 8h14M7 2v2M13 2v2"/></svg>
+            </div>
+          </div>
+          <div class="rev-value" id="keu-month-rev">Rp 0</div>
+          <div class="rev-sub" id="keu-month-label">Juni 2026</div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-card-top">
+            <span class="rev-label">Menunggu Pembayaran</span>
+            <div class="rev-icon" style="background:#fffbeb;color:var(--warning-500);">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l2.5 2.5"/></svg>
+            </div>
+          </div>
+          <div class="rev-value" id="keu-pending-rev">Rp 0</div>
+          <div class="rev-sub" id="keu-pending-count">— transaksi</div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-card-top">
+            <span class="rev-label">Overdue</span>
+            <div class="rev-icon" style="background:#fff1f0;color:var(--error-500);">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 6v4M10 14v.5"/></svg>
+            </div>
+          </div>
+          <div class="rev-value" id="keu-overdue-rev">Rp 0</div>
+          <div class="rev-sub" id="keu-overdue-count">— transaksi</div>
+        </div>
+      </div>
+
+      <!-- Chart + breakdown row -->
+      <div style="display:grid;grid-template-columns:1fr 260px;gap:16px;align-items:start;">
+
+        <!-- Bar chart revenue per bulan -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Revenue per Bulan</div>
+              <div class="card-subtitle">6 bulan terakhir — transaksi lunas</div>
+            </div>
+          </div>
+          <div class="bar-chart-wrap">
+            <canvas class="bar-chart-canvas" id="rev-chart" height="200"></canvas>
+            <div class="bar-chart-tooltip" id="rev-tooltip"></div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+
+        <!-- Paket breakdown -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Breakdown Paket</div></div>
+          <div id="keu-breakdown" style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;">
+            <!-- injected by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Payment list -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Daftar Pembayaran</div>
+            <div class="card-subtitle" id="keu-list-subtitle">— transaksi</div>
+          </div>
+          <div class="filter-bar">
+            <div class="search-wrap">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l3.5 3.5"/></svg>
+              <input type="text" placeholder="Cari nama, invoice..." oninput="filterPayments(this.value)" />
+            </div>
+            <select class="select-filter" onchange="filterPaymentStatus(this.value)">
+              <option value="">Semua Status</option>
+              <option value="lunas">Lunas</option>
+              <option value="pending">Pending</option>
+              <option value="overdue">Overdue</option>
+              <option value="batal">Dibatalkan</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Invoice</th>
+                <th>Pengguna</th>
+                <th>Paket</th>
+                <th>Jumlah</th>
+                <th>Tanggal</th>
+                <th>Jatuh Tempo</th>
+                <th>Status</th>
+                <th style="text-align:right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="payment-tbody"><!-- injected --></tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span class="pagination-info" id="payment-pagination-info"></span>
+          <div class="pagination-pages" id="payment-pagination"></div>
+        </div>
+      </div>
+
+    </div><!-- /page-keuangan -->
+
+  </div><!-- /main-wrap -->
+
+  <!-- ══════════════════════════════════════════════
+       MODAL: KONFIRMASI UBAH STATUS
+  ══════════════════════════════════════════════ -->
+  <div class="amodal-overlay" id="modal-status" role="dialog" aria-modal="true" aria-labelledby="modal-status-title">
+    <div class="amodal amodal--sm">
+      <div class="amodal-header">
+        <span class="amodal-title" id="modal-status-title">Ubah Status Pembayaran</span>
+        <button class="amodal-close" onclick="closeStatusModal()" aria-label="Tutup">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l12 12M16 4L4 16"/></svg>
+        </button>
+      </div>
+      <div class="amodal-body" style="display:flex;flex-direction:column;gap:16px;">
+        <div id="modal-status-info" style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--gray-700);line-height:1.6;"></div>
+        <div class="form-field">
+          <label class="form-label" for="status-select-modal">Status Baru</label>
+          <select class="form-input" id="status-select-modal">
+            <option value="lunas">Lunas</option>
+            <option value="pending">Pending</option>
+            <option value="overdue">Overdue</option>
+            <option value="batal">Dibatalkan</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="status-note">Catatan <span style="font-weight:400;color:var(--gray-400);">(opsional)</span></label>
+          <input class="form-input" type="text" id="status-note" placeholder="Contoh: Transfer dikonfirmasi via BCA" />
+        </div>
+      </div>
+      <div class="amodal-footer">
+        <button class="btn btn--outline" onclick="closeStatusModal()">Batal</button>
+        <button class="btn btn--primary" onclick="applyStatusChange()">Simpan Status</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Prototype banner -->
+  <div class="proto-banner" id="proto-banner">🧪 PROTOTYPE — Mock active</div>
+
+  <!-- Modal backdrop close -->
+  <script>
+    document.querySelectorAll('.amodal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+      });
+    });
+  </script>
+
+  <script>
+    /* Mobile menu toggle */
+    document.getElementById('btn-mobile-menu').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    function logoutAdmin() {
+      localStorage.removeItem('__prototype_session');
+      window.location.href = 'login-admin.html';
+    }
+
+    /* ══════════════════════════════════════════════
+       KEUANGAN — Payments & Revenue
+    ══════════════════════════════════════════════ */
+    const CHART_COLOR = '#0d4495';
+
+    const PAKET = {
+      basic:    { label: 'Basic',        price: 299000,  color: '#3d69aa' },
+      pro:      { label: 'Professional', price: 599000,  color: '#5d11a2' },
+      enterprise:{ label: 'Enterprise',  price: 1499000, color: '#0d4495' },
+    };
+
+    const STATUS_LABEL = { lunas:'Lunas', pending:'Pending', overdue:'Overdue', batal:'Dibatalkan' };
+
+    function fmtRp(n) {
+      return 'Rp ' + n.toLocaleString('id-ID');
+    }
+    function isoToDisplay(iso) {
+      const d = new Date(iso);
+      return `${d.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][d.getMonth()]} ${d.getFullYear()}`;
+    }
+    function addDays(iso, days) {
+      const d = new Date(iso); d.setDate(d.getDate() + days); return d.toISOString().slice(0,10);
+    }
+
+    let payments = [
+      { id:'INV-001', user:'M. Ramadhani',   avatar:'MR', color:'#0d4495', paket:'enterprise', date:'2026-01-10', status:'lunas'   },
+      { id:'INV-002', user:'Siti Rahayu',    avatar:'SR', color:'#5d11a2', paket:'pro',        date:'2026-01-15', status:'lunas'   },
+      { id:'INV-003', user:'Budi Santoso',   avatar:'BS', color:'#4361d1', paket:'basic',      date:'2026-02-01', status:'lunas'   },
+      { id:'INV-004', user:'Agus Setiawan',  avatar:'AS', color:'#12b76a', paket:'pro',        date:'2026-02-14', status:'lunas'   },
+      { id:'INV-005', user:'Dewi Anggraini', avatar:'DA', color:'#ff5c46', paket:'enterprise', date:'2026-02-20', status:'lunas'   },
+      { id:'INV-006', user:'Hendra Gunawan', avatar:'HG', color:'#667085', paket:'basic',      date:'2026-03-05', status:'lunas'   },
+      { id:'INV-007', user:'Rina Wulandari', avatar:'RW', color:'#f79009', paket:'pro',        date:'2026-03-10', status:'lunas'   },
+      { id:'INV-008', user:'Dwi Prasetyo',   avatar:'DP', color:'#7c3aed', paket:'basic',      date:'2026-03-18', status:'lunas'   },
+      { id:'INV-009', user:'M. Ramadhani',   avatar:'MR', color:'#0d4495', paket:'enterprise', date:'2026-04-10', status:'lunas'   },
+      { id:'INV-010', user:'Siti Rahayu',    avatar:'SR', color:'#5d11a2', paket:'pro',        date:'2026-04-15', status:'lunas'   },
+      { id:'INV-011', user:'Agus Setiawan',  avatar:'AS', color:'#12b76a', paket:'pro',        date:'2026-04-20', status:'lunas'   },
+      { id:'INV-012', user:'Budi Santoso',   avatar:'BS', color:'#4361d1', paket:'basic',      date:'2026-05-03', status:'lunas'   },
+      { id:'INV-013', user:'Dewi Anggraini', avatar:'DA', color:'#ff5c46', paket:'enterprise', date:'2026-05-10', status:'lunas'   },
+      { id:'INV-014', user:'Rina Wulandari', avatar:'RW', color:'#f79009', paket:'pro',        date:'2026-05-22', status:'lunas'   },
+      { id:'INV-015', user:'Hendra Gunawan', avatar:'HG', color:'#667085', paket:'basic',      date:'2026-06-01', status:'lunas'   },
+      { id:'INV-016', user:'Dwi Prasetyo',   avatar:'DP', color:'#7c3aed', paket:'pro',        date:'2026-06-03', status:'pending' },
+      { id:'INV-017', user:'M. Ramadhani',   avatar:'MR', color:'#0d4495', paket:'enterprise', date:'2026-06-05', status:'pending' },
+      { id:'INV-018', user:'Ahmad Fauzi',    avatar:'AF', color:'#429bf4', paket:'basic',      date:'2026-05-15', status:'overdue' },
+      { id:'INV-019', user:'Lia Permata',    avatar:'LP', color:'#941c9d', paket:'pro',        date:'2026-05-20', status:'overdue' },
+      { id:'INV-020', user:'Reza Kurniawan', avatar:'RK', color:'#344054', paket:'basic',      date:'2026-04-28', status:'batal'   },
+    ].map(p => ({ ...p, due: addDays(p.date, 14), amount: PAKET[p.paket].price }));
+
+    let payFiltered  = [...payments];
+    let payQuery     = '';
+    let payStatus    = '';
+    const PAY_PAGE   = 10;
+    let payPage      = 1;
+    let pendingStatusId = null;
+
+    /* ── Revenue helpers ─────────────────────── */
+    function calcRevenue() {
+      const lunas   = payments.filter(p => p.status === 'lunas');
+      const pending = payments.filter(p => p.status === 'pending');
+      const overdue = payments.filter(p => p.status === 'overdue');
+      const sum  = arr => arr.reduce((s,p) => s + p.amount, 0);
+
+      const now   = new Date();
+      const month = now.getMonth();
+      const year  = now.getFullYear();
+      const thisMonth = lunas.filter(p => {
+        const d = new Date(p.date);
+        return d.getMonth() === month && d.getFullYear() === year;
+      });
+
+      document.getElementById('keu-total-rev').textContent        = fmtRp(sum(lunas));
+      document.getElementById('keu-total-rev-change').innerHTML   =
+        `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10l6-6 6 6"/></svg> ${lunas.length} transaksi lunas`;
+      document.getElementById('keu-month-rev').textContent        = fmtRp(sum(thisMonth));
+      document.getElementById('keu-month-label').textContent      =
+        `${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][month]} ${year}`;
+      document.getElementById('keu-pending-rev').textContent      = fmtRp(sum(pending));
+      document.getElementById('keu-pending-count').textContent    = `${pending.length} transaksi`;
+      document.getElementById('keu-overdue-rev').textContent      = fmtRp(sum(overdue));
+      document.getElementById('keu-overdue-count').textContent    = `${overdue.length} transaksi`;
+
+      renderBreakdown();
+      drawRevChart();
+    }
+
+    function renderBreakdown() {
+      const lunas = payments.filter(p => p.status === 'lunas');
+      const total = lunas.reduce((s,p) => s + p.amount, 0);
+      const box   = document.getElementById('keu-breakdown');
+      const byPaket = Object.entries(PAKET).map(([key, meta]) => {
+        const rows = lunas.filter(p => p.paket === key);
+        const rev  = rows.reduce((s,p) => s + p.amount, 0);
+        return { key, meta, rows, rev };
+      }).sort((a,b) => b.rev - a.rev);
+
+      box.innerHTML = byPaket.map(({key, meta, rows, rev}) => {
+        const pct = total ? Math.round(rev / total * 100) : 0;
+        return `
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:${meta.color};flex-shrink:0;"></div>
+              <span style="font-size:13px;font-weight:500;color:var(--gray-700);">${meta.label}</span>
+            </div>
+            <span style="font-size:12px;color:var(--gray-500);">${rows.length} transaksi</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${pct}%;background:${meta.color};"></div></div>
+            <span style="font-size:11px;color:var(--gray-400);width:32px;text-align:right;">${pct}%</span>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--gray-800);margin-top:3px;">${fmtRp(rev)}</div>
+        </div>`;
+      }).join('');
+    }
+
+    /* ── Bar chart ───────────────────────────── */
+    let revHoverIdx = -1;
+
+    function drawRevChart() {
+      const canvas = document.getElementById('rev-chart');
+      if (!canvas) return;
+      const dpr   = window.devicePixelRatio || 1;
+      const cssW  = canvas.parentElement.clientWidth - 40;
+      const cssH  = 200;
+      canvas.width  = cssW * dpr;
+      canvas.height = cssH * dpr;
+      canvas.style.width  = cssW + 'px';
+      canvas.style.height = cssH + 'px';
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      /* build 6-month data */
+      const now    = new Date();
+      const months = Array.from({length:6}, (_,i) => {
+        const d = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1);
+        return { month: d.getMonth(), year: d.getFullYear(),
+          label: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][d.getMonth()] + ' ' + String(d.getFullYear()).slice(2) };
+      });
+      const data = months.map(m => ({
+        label: m.label,
+        value: payments
+          .filter(p => p.status === 'lunas')
+          .filter(p => { const d = new Date(p.date); return d.getMonth()===m.month && d.getFullYear()===m.year; })
+          .reduce((s,p) => s + p.amount, 0),
+      }));
+
+      const padL=48, padR=16, padT=12, padB=36;
+      const w = cssW - padL - padR;
+      const h = cssH - padT - padB;
+      const maxVal = Math.max(...data.map(d=>d.value), 1);
+      const yMax   = Math.ceil(maxVal / 1000000) * 1000000 || 2000000;
+      const barW   = Math.floor(w / data.length * 0.55);
+      const gap    = w / data.length;
+
+      ctx.clearRect(0, 0, cssW, cssH);
+
+      /* grid + Y labels */
+      ctx.font = '11px Inter, sans-serif';
+      ctx.fillStyle = '#98a2b3';
+      ctx.textAlign = 'right';
+      for (let i=0; i<=4; i++) {
+        const yVal = (yMax/4)*i;
+        const cy   = padT + h - (yVal/yMax)*h;
+        ctx.beginPath();
+        ctx.strokeStyle = i===0 ? '#d0d5dd' : '#eaecf0';
+        ctx.lineWidth = 1;
+        ctx.moveTo(padL, cy); ctx.lineTo(padL+w, cy);
+        ctx.stroke();
+        ctx.fillText(yVal >= 1000000 ? (yVal/1000000).toFixed(1)+'jt' : (yVal/1000)+'rb', padL-6, cy+4);
+      }
+
+      /* bars */
+      data.forEach((d, i) => {
+        const cx    = padL + gap * i + gap/2;
+        const barH  = (d.value / yMax) * h;
+        const bx    = cx - barW/2;
+        const by    = padT + h - barH;
+        const isHov = i === revHoverIdx;
+
+        const grad = ctx.createLinearGradient(0, by, 0, padT+h);
+        grad.addColorStop(0, isHov ? '#1a5dbe' : CHART_COLOR);
+        grad.addColorStop(1, isHov ? 'rgba(26,93,190,.6)' : 'rgba(13,68,149,.5)');
+        ctx.fillStyle = grad;
+        const r = Math.min(5, barW/2);
+        ctx.beginPath();
+        ctx.moveTo(bx+r, by);
+        ctx.lineTo(bx+barW-r, by);
+        ctx.quadraticCurveTo(bx+barW, by, bx+barW, by+r);
+        ctx.lineTo(bx+barW, padT+h);
+        ctx.lineTo(bx, padT+h);
+        ctx.lineTo(bx, by+r);
+        ctx.quadraticCurveTo(bx, by, bx+r, by);
+        ctx.closePath();
+        ctx.fill();
+
+        /* X label */
+        ctx.fillStyle   = '#98a2b3';
+        ctx.textAlign   = 'center';
+        ctx.font        = '11px Inter, sans-serif';
+        ctx.fillText(d.label, cx, cssH - 8);
+      });
+    }
+
+    function initRevChart() {
+      const canvas = document.getElementById('rev-chart');
+      if (!canvas) return;
+      canvas.addEventListener('mousemove', function(e) {
+        const rect  = canvas.getBoundingClientRect();
+        const cssW  = parseFloat(canvas.style.width);
+        const padL  = 48, padR = 16;
+        const w     = cssW - padL - padR;
+        const mx    = e.clientX - rect.left;
+        const gap   = w / 6;
+        const idx   = Math.floor((mx - padL) / gap);
+        const clamped = Math.max(0, Math.min(5, idx));
+        if (clamped !== revHoverIdx) {
+          revHoverIdx = clamped;
+          drawRevChart();
+        }
+      });
+      canvas.addEventListener('mouseleave', () => { revHoverIdx=-1; drawRevChart(); });
+    }
+
+    /* ── Payment table ───────────────────────── */
+    function renderPayments() {
+      const tbody = document.getElementById('payment-tbody');
+      const start = (payPage-1)*PAY_PAGE;
+      const slice = payFiltered.slice(start, start+PAY_PAGE);
+
+      document.getElementById('keu-list-subtitle').textContent = `${payFiltered.length} transaksi`;
+
+      if (!slice.length) {
+        tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l3.5 3.5"/></svg>
+          <div class="empty-title">Tidak ditemukan</div></div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = slice.map(p => {
+        const paket = PAKET[p.paket];
+        return `
+          <tr>
+            <td style="font-family:monospace;font-size:12px;color:var(--gray-500);">${p.id}</td>
+            <td>
+              <div class="user-cell">
+                <div class="user-cell-avatar" style="background:${p.color};">${p.avatar}</div>
+                <div class="user-cell-name">${p.user}</div>
+              </div>
+            </td>
+            <td>
+              <span style="font-size:12px;font-weight:500;color:${paket.color};
+                background:${paket.color}15;padding:2px 8px;border-radius:100px;">
+                ${paket.label}
+              </span>
+            </td>
+            <td class="amount-cell ${p.status}">${fmtRp(p.amount)}</td>
+            <td style="font-size:13px;color:var(--gray-600);white-space:nowrap;">${isoToDisplay(p.date)}</td>
+            <td style="font-size:13px;color:${p.status==='overdue'?'var(--error-500)':'var(--gray-600)'};white-space:nowrap;">
+              ${isoToDisplay(p.due)}${p.status==='overdue'?' ⚠️':''}
+            </td>
+            <td>
+              <select class="status-select ${p.status}" onchange="quickUpdateStatus('${p.id}', this.value, this)">
+                ${Object.entries(STATUS_LABEL).map(([v,l]) =>
+                  `<option value="${v}" ${v===p.status?'selected':''}>${l}</option>`).join('')}
+              </select>
+            </td>
+            <td>
+              <div class="row-actions" style="justify-content:flex-end;">
+                <button class="icon-btn" title="Ubah Status" onclick="openStatusModal('${p.id}')">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l2.5 2.5"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+
+      /* pagination */
+      const total  = Math.max(1, Math.ceil(payFiltered.length / PAY_PAGE));
+      const pag    = document.getElementById('payment-pagination');
+      pag.innerHTML = '';
+      const mkBtn = (html, page, active) => {
+        const b = document.createElement('button');
+        b.className = 'page-btn' + (active?' active':'');
+        b.innerHTML = html;
+        b.onclick = () => { payPage = page; renderPayments(); };
+        pag.appendChild(b);
+      };
+      mkBtn(`<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4l-6 6 6 6"/></svg>`, Math.max(1,payPage-1), false);
+      for (let p=1; p<=total; p++) mkBtn(p, p, p===payPage);
+      mkBtn(`<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 4l6 6-6 6"/></svg>`, Math.min(total,payPage+1), false);
+
+      document.getElementById('payment-pagination-info').textContent =
+        `Menampilkan ${start+1}–${Math.min(start+PAY_PAGE, payFiltered.length)} dari ${payFiltered.length} transaksi`;
+    }
+
+    function applyPayFilter() {
+      const q = payQuery.toLowerCase();
+      payFiltered = payments.filter(p => {
+        const matchQ = !q || p.id.toLowerCase().includes(q) || p.user.toLowerCase().includes(q);
+        const matchS = !payStatus || p.status === payStatus;
+        return matchQ && matchS;
+      });
+      payPage = 1;
+      renderPayments();
+    }
+    function filterPayments(v)      { payQuery = v;  applyPayFilter(); }
+    function filterPaymentStatus(v) { payStatus = v; applyPayFilter(); }
+
+    /* Quick inline update (dropdown) */
+    function quickUpdateStatus(id, newStatus, selectEl) {
+      const p = payments.find(p => p.id === id);
+      if (!p) return;
+      p.status = newStatus;
+      selectEl.className = 'status-select ' + newStatus;
+      const row = selectEl.closest('tr');
+      if (row) {
+        const amtCell = row.querySelector('.amount-cell');
+        if (amtCell) amtCell.className = 'amount-cell ' + newStatus;
+      }
+      calcRevenue();
+    }
+
+    /* Modal status update */
+    function openStatusModal(id) {
+      pendingStatusId = id;
+      const p = payments.find(p => p.id === id);
+      if (!p) return;
+      document.getElementById('modal-status-info').innerHTML =
+        `<strong>${p.id}</strong> · ${p.user}<br>` +
+        `Paket: ${PAKET[p.paket].label} · ${fmtRp(p.amount)}<br>` +
+        `Status saat ini: <strong>${STATUS_LABEL[p.status]}</strong>`;
+      document.getElementById('status-select-modal').value = p.status;
+      document.getElementById('status-note').value = '';
+      document.getElementById('modal-status').classList.add('open');
+    }
+    function closeStatusModal() {
+      document.getElementById('modal-status').classList.remove('open');
+      pendingStatusId = null;
+    }
+    function applyStatusChange() {
+      if (!pendingStatusId) return;
+      const newStatus = document.getElementById('status-select-modal').value;
+      const p = payments.find(p => p.id === pendingStatusId);
+      if (p) p.status = newStatus;
+      applyPayFilter();
+      calcRevenue();
+      closeStatusModal();
+    }
+
+    /* Export payments to Excel */
+    function exportPayments() {
+      const rows = payments.map(p => ({
+        'Invoice':       p.id,
+        'Pengguna':      p.user,
+        'Paket':         PAKET[p.paket].label,
+        'Jumlah (Rp)':   p.amount,
+        'Tanggal':       p.date,
+        'Jatuh Tempo':   p.due,
+        'Status':        STATUS_LABEL[p.status],
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      ws['!cols'] = [10,20,14,14,12,12,12].map(w => ({wch:w}));
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Pembayaran');
+      XLSX.writeFile(wb, 'pembayaran_polypipe.xlsx');
+    }
+
+    /* init */
+    calcRevenue();
+    renderPayments();
+    requestAnimationFrame(() => initRevChart());
+    window.addEventListener('resize', () => { drawRevChart(); });
+  </script>
+</body>
+</html>

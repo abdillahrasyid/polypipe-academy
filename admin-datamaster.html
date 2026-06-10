@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Master — Polypipe Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <meta name="use-mock" content="true" />
+  <meta name="api-base-url" content="/api/v1" />
+  <script>
+    window.USE_MOCK = document.querySelector('meta[name="use-mock"]')?.content === 'true';
+    window.API_BASE_URL = document.querySelector('meta[name="api-base-url"]')?.content ?? '/api/v1';
+  </script>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo-box">P</div>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">POLYPIPE.id</span>
+        <span class="sidebar-brand-sub">Academy</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Utama</div>
+      <a href="admin.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="admin-users.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 17c0-3.314 2.686-6 6-6s6 2.686 6 6"/><path d="M13 3.5a3 3 0 010 5M18 17c0-2.761-2-5-4.5-5.5"/></svg>
+        Pengguna
+        <span class="nav-badge">3</span>
+      </a>
+      <a href="admin-modules.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h12v12H4z" rx="1"/><path d="M8 9h4M8 12h2"/><path d="M7 2v2M13 2v2"/></svg>
+        Modul Materi
+      </a>
+      <a href="admin-datamaster.html" class="nav-item active">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="10" cy="5" rx="7" ry="2.5"/><path d="M3 5v4c0 1.38 3.134 2.5 7 2.5S17 10.38 17 9V5"/><path d="M3 9v4c0 1.38 3.134 2.5 7 2.5S17 14.38 17 13V9"/></svg>
+        Data Master
+      </a>
+      <a href="admin-keuangan.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="16" height="11" rx="2"/><path d="M2 9h16"/><circle cx="6" cy="13" r="1" fill="currentColor"/></svg>
+        Keuangan
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Pengaturan</div>
+      <a href="admin-settings.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M15.78 4.22l-1.42 1.42M5.64 14.36l-1.42 1.42"/></svg>
+        Pengaturan
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar">AR</div>
+        <div class="user-info">
+          <div class="user-name">Admin Polypipe</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <button class="btn-logout" title="Keluar" onclick="logoutAdmin()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10H3M7 6l-4 4 4 4"/><path d="M10 3h5a1 1 0 011 1v12a1 1 0 01-1 1h-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN
+  ═══════════════════════════════════════════════ -->
+  <div class="main-wrap">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="topbar-btn" id="btn-mobile-menu" aria-label="Menu">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+        </button>
+        <div class="breadcrumb">
+          <a href="admin.html" class="breadcrumb-item" style="text-decoration:none;">Polypipe Academy</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Data Master</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" title="Notifikasi">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 00-6-6z"/><path d="M8 16a2 2 0 004 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="topbar-avatar" title="Admin Polypipe">AR</div>
+      </div>
+    </header>
+
+    <!-- ─────────────────────────────────────────────
+         PAGE: DATA MASTER
+    ───────────────────────────────────────────── -->
+    <div class="page-content active" id="page-datamaster">
+
+      <div class="page-heading">
+        <div>
+          <h1 class="page-title">Data Master</h1>
+          <p class="page-subtitle">Parameter pengelasan pipa HDPE — butt fusion welding.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn--outline" onclick="downloadTemplate()">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3v10M6 9l4 4 4-4"/><path d="M3 16h14"/></svg>
+            Unduh Template
+          </button>
+          <button class="btn btn--outline" onclick="openImportModal()">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13V3M6 7l4-4 4 4"/><rect x="3" y="14" width="14" height="3" rx="1"/></svg>
+            Import Excel
+          </button>
+          <button class="btn btn--primary" onclick="openAddModal()">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 4v12M4 10h12"/></svg>
+            Tambah Data
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="filter-bar">
+            <div class="search-wrap">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l3.5 3.5"/></svg>
+              <input type="text" placeholder="Cari diameter, SDR, en..." oninput="filterDM(this.value)" />
+            </div>
+            <select class="select-filter" id="dm-filter-diameter" onchange="filterDM()">
+              <option value="">Semua Diameter</option>
+            </select>
+          </div>
+          <span class="badge badge--blue" id="dm-count-badge">9 data</span>
+        </div>
+
+        <div class="dm-table-wrap">
+          <table class="dm-table">
+            <thead>
+              <tr>
+                <th style="width:36px;"><input type="checkbox" id="dm-check-all" style="accent-color:var(--prime-500);" /></th>
+                <th>Diameter<br><span style="font-weight:400;text-transform:none;">(mm)</span></th>
+                <th>D<br><span style="font-weight:400;text-transform:none;">(mm)</span></th>
+                <th>en<br><span style="font-weight:400;text-transform:none;">(mm)</span></th>
+                <th>SDR<br><span style="font-weight:400;text-transform:none;">=D/en</span></th>
+                <th>T min/nom/max<br><span style="font-weight:400;text-transform:none;">(°C)</span></th>
+                <th>*p1<br><span style="font-weight:400;text-transform:none;">(bar)</span></th>
+                <th>A<br><span style="font-weight:400;text-transform:none;">(mm)</span></th>
+                <th>p2<br><span style="font-weight:400;text-transform:none;">(bar)</span></th>
+                <th>t2<br><span style="font-weight:400;text-transform:none;">(s)</span></th>
+                <th>t3 max<br><span style="font-weight:400;text-transform:none;">(s)</span></th>
+                <th>t4<br><span style="font-weight:400;text-transform:none;">(s)</span></th>
+                <th>*p3<br><span style="font-weight:400;text-transform:none;">(bar)</span></th>
+                <th>t5<br><span style="font-weight:400;text-transform:none;">(20.0°C)</span></th>
+                <th style="text-align:right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="dm-tbody">
+              <!-- injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span class="pagination-info" id="dm-pagination-info">Menampilkan 1–9 dari 9 data</span>
+          <div class="pagination-pages" id="dm-pagination"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /main-wrap -->
+
+  <!-- ══════════════════════════════════════════════
+       MODAL: TAMBAH / EDIT DATA MASTER
+  ══════════════════════════════════════════════ -->
+  <div class="amodal-overlay" id="modal-dm" role="dialog" aria-modal="true" aria-labelledby="modal-dm-title">
+    <div class="amodal">
+      <div class="amodal-header">
+        <span class="amodal-title" id="modal-dm-title">Tambah Data</span>
+        <button class="amodal-close" onclick="closeDMModal()" aria-label="Tutup">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l12 12M16 4L4 16"/></svg>
+        </button>
+      </div>
+      <div class="amodal-body">
+        <div class="form-grid">
+          <!-- Row 1 -->
+          <div class="form-field">
+            <label class="form-label" for="dm-diameter">Diameter <sup>*</sup></label>
+            <input class="form-input" type="number" id="dm-diameter" placeholder="500" min="0" />
+            <span class="form-hint">mm</span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="dm-d">D <sup>*</sup></label>
+            <input class="form-input" type="number" id="dm-d" placeholder="500" min="0" />
+            <span class="form-hint">mm</span>
+          </div>
+          <!-- Row 2 -->
+          <div class="form-field">
+            <label class="form-label" for="dm-en">en <sup>*</sup></label>
+            <input class="form-input" type="text" id="dm-en" placeholder="12.3# atau 15.38" />
+            <span class="form-hint">mm — tambahkan # jika nilai nominal</span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="dm-sdr">SDR</label>
+            <input class="form-input" type="text" id="dm-sdr" placeholder="41" />
+            <span class="form-hint">=D/en, isi otomatis atau manual</span>
+          </div>
+          <!-- Row 3 -->
+          <div class="form-field span2">
+            <label class="form-label" for="dm-temp">T min/nom/max <sup>*</sup></label>
+            <input class="form-input" type="text" id="dm-temp" placeholder="215/225/235" />
+            <span class="form-hint">°C — format: min/nom/max dipisah /</span>
+          </div>
+          <!-- Row 4 -->
+          <div class="form-field">
+            <label class="form-label" for="dm-p1">*p1 <sup>*</sup></label>
+            <input class="form-input" type="number" id="dm-p1" placeholder="6" min="0" step="0.1" />
+            <span class="form-hint">bar</span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="dm-a">A <sup>*</sup></label>
+            <input class="form-input" type="number" id="dm-a" placeholder="1.7" min="0" step="0.1" />
+            <span class="form-hint">mm</span>
+          </div>
+          <!-- Row 5 -->
+          <div class="form-field span2">
+            <label class="form-label" for="dm-p2">p2</label>
+            <input class="form-input" type="text" id="dm-p2" placeholder="0 to drag pressure" />
+            <span class="form-hint">bar — isi teks atau angka</span>
+          </div>
+          <!-- Row 6 -->
+          <div class="form-field">
+            <label class="form-label" for="dm-t2">t2 <sup>*</sup></label>
+            <input class="form-input" type="number" id="dm-t2" placeholder="166" min="0" />
+            <span class="form-hint">detik (s)</span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="dm-t3max">t3 max <sup>*</sup></label>
+            <input class="form-input" type="number" id="dm-t3max" placeholder="10" min="0" />
+            <span class="form-hint">detik (s)</span>
+          </div>
+          <!-- Row 7 -->
+          <div class="form-field">
+            <label class="form-label" for="dm-t4">t4 <sup>*</sup></label>
+            <input class="form-input" type="number" id="dm-t4" placeholder="18" min="0" />
+            <span class="form-hint">detik (s)</span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="dm-p3">*p3 <sup>*</sup></label>
+            <input class="form-input" type="number" id="dm-p3" placeholder="6" min="0" step="0.1" />
+            <span class="form-hint">bar</span>
+          </div>
+          <!-- Row 8 -->
+          <div class="form-field span2">
+            <label class="form-label" for="dm-t5">t5 <sup>*</sup></label>
+            <input class="form-input" type="text" id="dm-t5" placeholder="890 s" />
+            <span class="form-hint">20.0°C — contoh: 890 s</span>
+          </div>
+        </div>
+      </div>
+      <div class="amodal-footer">
+        <button class="btn btn--outline" onclick="closeDMModal()">Batal</button>
+        <button class="btn btn--primary" id="btn-dm-save" onclick="saveDMRow()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       MODAL: IMPORT EXCEL
+  ══════════════════════════════════════════════ -->
+  <div class="amodal-overlay" id="modal-import" role="dialog" aria-modal="true" aria-labelledby="modal-import-title">
+    <div class="amodal amodal--sm">
+      <div class="amodal-header">
+        <span class="amodal-title" id="modal-import-title">Import dari Excel</span>
+        <button class="amodal-close" onclick="closeImportModal()" aria-label="Tutup">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l12 12M16 4L4 16"/></svg>
+        </button>
+      </div>
+      <div class="amodal-body" style="display:flex;flex-direction:column;gap:14px;">
+
+        <div style="font-size:13px;color:var(--gray-600);line-height:1.6;">
+          Upload file <strong>.xlsx</strong> atau <strong>.csv</strong> sesuai format template. Kolom harus berurutan persis seperti template.
+        </div>
+
+        <div class="import-drop" id="import-drop" onclick="document.getElementById('import-file').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 20h16"/></svg>
+          <div class="import-drop-title">Klik atau drag &amp; drop file di sini</div>
+          <div class="import-drop-sub">.xlsx atau .csv — maks. 5 MB</div>
+          <div class="import-file-name" id="import-file-name"></div>
+        </div>
+        <input type="file" id="import-file" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleImportFile(this)" />
+
+        <div class="import-preview-info" id="import-preview-info"></div>
+
+        <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--gray-600);line-height:1.7;">
+          <strong style="color:var(--gray-700);">Kolom yang dibutuhkan:</strong><br>
+          Diameter · D · en · SDR · T_min_nom_max · p1 · A · p2 · t2 · t3_max · t4 · p3 · t5
+        </div>
+
+        <button class="btn btn--outline btn--sm" onclick="downloadTemplate()" style="align-self:flex-start;">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3v10M6 9l4 4 4-4"/><path d="M3 16h14"/></svg>
+          Unduh Template Excel
+        </button>
+      </div>
+      <div class="amodal-footer">
+        <button class="btn btn--outline" onclick="closeImportModal()">Batal</button>
+        <button class="btn btn--primary" id="btn-import-apply" onclick="applyImport()" disabled>Import Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Prototype banner -->
+  <div class="proto-banner" id="proto-banner">🧪 PROTOTYPE — Mock active</div>
+
+  <!-- Modal backdrop close -->
+  <script>
+    document.querySelectorAll('.amodal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('open');
+          pendingImportRows = null;
+        }
+      });
+    });
+  </script>
+
+  <script>
+    /* Mobile menu toggle */
+    document.getElementById('btn-mobile-menu').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    function logoutAdmin() {
+      localStorage.removeItem('__prototype_session');
+      window.location.href = 'login-admin.html';
+    }
+
+    /* ══════════════════════════════════════════════
+       DATA MASTER — CRUD
+    ══════════════════════════════════════════════ */
+    const DM_COLS = ['diameter','d','en','sdr','temp','p1','a','p2','t2','t3max','t4','p3','t5'];
+
+    let dmData = [
+      { id:1, diameter:500, d:500, en:'12.3#',  sdr:'41',   temp:'215/225/235', p1:6,  a:1.7, p2:'0 to drag pressure', t2:166, t3max:10, t4:18, p3:6,  t5:'890 s' },
+      { id:2, diameter:500, d:500, en:'15.3#',  sdr:'33',   temp:'215/225/235', p1:8,  a:2.0, p2:'0 to drag pressure', t2:207, t3max:10, t4:18, p3:8,  t5:'1065 s' },
+      { id:3, diameter:500, d:500, en:'15.38',  sdr:'32.5', temp:'215/225/235', p1:8,  a:2.0, p2:'0 to drag pressure', t2:208, t3max:10, t4:18, p3:8,  t5:'1070 s' },
+      { id:4, diameter:500, d:500, en:'19.1#',  sdr:'26',   temp:'215/225/235', p1:10, a:2.4, p2:'0 to drag pressure', t2:258, t3max:12, t4:18, p3:10, t5:'960 s' },
+      { id:5, diameter:500, d:500, en:'23.9#',  sdr:'21',   temp:'215/225/235', p1:12, a:2.9, p2:'0 to drag pressure', t2:323, t3max:12, t4:18, p3:12, t5:'1009 s' },
+      { id:6, diameter:500, d:500, en:'26.32',  sdr:'19',   temp:'215/225/235', p1:13, a:3.1, p2:'0 to drag pressure', t2:355, t3max:16, t4:18, p3:13, t5:'1049 s' },
+      { id:7, diameter:500, d:500, en:'28.41',  sdr:'17.6', temp:'215/225/235', p1:14, a:3.3, p2:'0 to drag pressure', t2:384, t3max:16, t4:18, p3:14, t5:'1091 s' },
+      { id:8, diameter:500, d:500, en:'29.7#',  sdr:'17',   temp:'215/225/235', p1:15, a:3.5, p2:'0 to drag pressure', t2:401, t3max:16, t4:18, p3:15, t5:'1121 s' },
+      { id:9, diameter:500, d:500, en:'32.26',  sdr:'15.5', temp:'215/225/235', p1:16, a:3.7, p2:'0 to drag pressure', t2:435, t3max:16, t4:18, p3:16, t5:'1190 s' },
+    ];
+    let dmNextId    = 10;
+    let dmEditId    = null;
+    let dmFiltered  = [...dmData];
+    let dmQuery     = '';
+    let dmDiameter  = '';
+    const DM_PAGE_SIZE = 15;
+    let dmCurrentPage  = 1;
+
+    /* ── Render table ─────────────────────────── */
+    function renderDM() {
+      const tbody = document.getElementById('dm-tbody');
+      const start = (dmCurrentPage - 1) * DM_PAGE_SIZE;
+      const slice = dmFiltered.slice(start, start + DM_PAGE_SIZE);
+
+      if (!slice.length) {
+        tbody.innerHTML = `<tr><td colspan="15"><div class="empty-state">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l3.5 3.5"/></svg>
+          <div class="empty-title">Tidak ditemukan</div>
+          <div class="empty-desc">Coba ubah kata kunci atau filter.</div></div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = slice.map(row => `
+        <tr>
+          <td><input type="checkbox" data-id="${row.id}" class="dm-row-check" style="accent-color:var(--prime-500);" /></td>
+          <td style="font-weight:500;">${row.diameter}</td>
+          <td>${row.d}</td>
+          <td>${row.en}</td>
+          <td>${row.sdr}</td>
+          <td style="white-space:nowrap;">${row.temp}</td>
+          <td>${row.p1}</td>
+          <td>${row.a}</td>
+          <td style="color:var(--gray-500);font-size:12px;">${row.p2}</td>
+          <td>${row.t2}</td>
+          <td>${row.t3max}</td>
+          <td>${row.t4}</td>
+          <td>${row.p3}</td>
+          <td style="font-weight:500;color:var(--prime-600);">${row.t5}</td>
+          <td>
+            <div class="row-actions" style="justify-content:flex-end;">
+              <button class="icon-btn" title="Edit" onclick="openEditModal(${row.id})">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 3l4 4-10 10H3v-4L13 3z"/></svg>
+              </button>
+              <button class="icon-btn delete" title="Hapus" onclick="deleteDMRow(${row.id})">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h14M8 6V4h4v2M6 6l1 11h6l1-11"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+
+      /* pagination */
+      const totalPages = Math.max(1, Math.ceil(dmFiltered.length / DM_PAGE_SIZE));
+      const pag = document.getElementById('dm-pagination');
+      pag.innerHTML = '';
+      const addBtn = (label, page, isActive) => {
+        const b = document.createElement('button');
+        b.className = 'page-btn' + (isActive ? ' active' : '');
+        b.innerHTML = label;
+        b.onclick = () => { dmCurrentPage = page; renderDM(); };
+        pag.appendChild(b);
+      };
+      addBtn(`<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4l-6 6 6 6"/></svg>`, Math.max(1, dmCurrentPage-1), false);
+      for (let p = 1; p <= totalPages; p++) addBtn(p, p, p === dmCurrentPage);
+      addBtn(`<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 4l6 6-6 6"/></svg>`, Math.min(totalPages, dmCurrentPage+1), false);
+
+      document.getElementById('dm-pagination-info').textContent =
+        `Menampilkan ${start+1}–${Math.min(start+DM_PAGE_SIZE, dmFiltered.length)} dari ${dmFiltered.length} data`;
+      document.getElementById('dm-count-badge').textContent = `${dmFiltered.length} data`;
+
+      /* populate diameter filter */
+      const sel = document.getElementById('dm-filter-diameter');
+      const diameters = [...new Set(dmData.map(r => r.diameter))].sort((a,b)=>a-b);
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">Semua Diameter</option>' +
+        diameters.map(d => `<option value="${d}" ${d==cur?'selected':''}>${d} mm</option>`).join('');
+    }
+
+    function filterDM(query) {
+      if (query !== undefined) dmQuery = query.toLowerCase();
+      dmDiameter = document.getElementById('dm-filter-diameter')?.value || '';
+      dmFiltered = dmData.filter(r => {
+        const matchQ = !dmQuery ||
+          String(r.diameter).includes(dmQuery) ||
+          String(r.en).toLowerCase().includes(dmQuery) ||
+          String(r.sdr).includes(dmQuery) ||
+          r.temp.includes(dmQuery);
+        const matchD = !dmDiameter || String(r.diameter) === dmDiameter;
+        return matchQ && matchD;
+      });
+      dmCurrentPage = 1;
+      renderDM();
+    }
+
+    /* ── CRUD helpers ─────────────────────────── */
+    function dmFields() {
+      return {
+        diameter: parseFloat(document.getElementById('dm-diameter').value) || 0,
+        d:        parseFloat(document.getElementById('dm-d').value) || 0,
+        en:       document.getElementById('dm-en').value.trim(),
+        sdr:      document.getElementById('dm-sdr').value.trim(),
+        temp:     document.getElementById('dm-temp').value.trim(),
+        p1:       parseFloat(document.getElementById('dm-p1').value) || 0,
+        a:        parseFloat(document.getElementById('dm-a').value) || 0,
+        p2:       document.getElementById('dm-p2').value.trim() || '0 to drag pressure',
+        t2:       parseInt(document.getElementById('dm-t2').value) || 0,
+        t3max:    parseInt(document.getElementById('dm-t3max').value) || 0,
+        t4:       parseInt(document.getElementById('dm-t4').value) || 0,
+        p3:       parseFloat(document.getElementById('dm-p3').value) || 0,
+        t5:       document.getElementById('dm-t5').value.trim(),
+      };
+    }
+
+    function fillForm(row) {
+      document.getElementById('dm-diameter').value = row.diameter;
+      document.getElementById('dm-d').value        = row.d;
+      document.getElementById('dm-en').value       = row.en;
+      document.getElementById('dm-sdr').value      = row.sdr;
+      document.getElementById('dm-temp').value     = row.temp;
+      document.getElementById('dm-p1').value       = row.p1;
+      document.getElementById('dm-a').value        = row.a;
+      document.getElementById('dm-p2').value       = row.p2;
+      document.getElementById('dm-t2').value       = row.t2;
+      document.getElementById('dm-t3max').value    = row.t3max;
+      document.getElementById('dm-t4').value       = row.t4;
+      document.getElementById('dm-p3').value       = row.p3;
+      document.getElementById('dm-t5').value       = row.t5;
+    }
+
+    function clearForm() {
+      DM_COLS.forEach(id => {
+        const el = document.getElementById('dm-' + id);
+        if (el) el.value = '';
+      });
+      document.getElementById('dm-p2').value = '0 to drag pressure';
+      document.getElementById('dm-temp').value = '215/225/235';
+    }
+
+    /* Auto-calc SDR */
+    ['dm-d','dm-en'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', () => {
+        const d  = parseFloat(document.getElementById('dm-d').value);
+        const en = parseFloat(document.getElementById('dm-en').value);
+        if (d && en) {
+          document.getElementById('dm-sdr').value = (d / en).toFixed(1);
+        }
+      });
+    });
+
+    function openAddModal() {
+      dmEditId = null;
+      clearForm();
+      document.getElementById('modal-dm-title').textContent = 'Tambah Data';
+      document.getElementById('btn-dm-save').textContent = 'Simpan';
+      document.getElementById('modal-dm').classList.add('open');
+    }
+
+    function openEditModal(id) {
+      const row = dmData.find(r => r.id === id);
+      if (!row) return;
+      dmEditId = id;
+      fillForm(row);
+      document.getElementById('modal-dm-title').textContent = 'Edit Data';
+      document.getElementById('btn-dm-save').textContent = 'Perbarui';
+      document.getElementById('modal-dm').classList.add('open');
+    }
+
+    function closeDMModal() {
+      document.getElementById('modal-dm').classList.remove('open');
+    }
+
+    function saveDMRow() {
+      const row = dmFields();
+      if (!row.en || !row.diameter) {
+        alert('Diameter dan en wajib diisi.');
+        return;
+      }
+      if (dmEditId !== null) {
+        const idx = dmData.findIndex(r => r.id === dmEditId);
+        if (idx > -1) dmData[idx] = { ...dmData[idx], ...row };
+      } else {
+        dmData.push({ id: dmNextId++, ...row });
+      }
+      filterDM();
+      closeDMModal();
+    }
+
+    function deleteDMRow(id) {
+      if (!confirm('Hapus data ini?')) return;
+      dmData = dmData.filter(r => r.id !== id);
+      filterDM();
+    }
+
+    /* ── Select all ───────────────────────────── */
+    document.getElementById('dm-check-all')?.addEventListener('change', function() {
+      document.querySelectorAll('.dm-row-check').forEach(c => c.checked = this.checked);
+    });
+
+    /* ── Import modal ─────────────────────────── */
+    let pendingImportRows = null;
+
+    function openImportModal() {
+      document.getElementById('modal-import').classList.add('open');
+      resetImportModal();
+    }
+
+    function closeImportModal() {
+      document.getElementById('modal-import').classList.remove('open');
+      pendingImportRows = null;
+    }
+
+    function resetImportModal() {
+      document.getElementById('import-file').value = '';
+      document.getElementById('import-file-name').style.display = 'none';
+      document.getElementById('import-preview-info').style.display = 'none';
+      document.getElementById('btn-import-apply').disabled = true;
+      pendingImportRows = null;
+    }
+
+    /* Drag & drop */
+    const importDrop = document.getElementById('import-drop');
+    importDrop.addEventListener('dragover',  e => { e.preventDefault(); importDrop.classList.add('drag-over'); });
+    importDrop.addEventListener('dragleave', () => importDrop.classList.remove('drag-over'));
+    importDrop.addEventListener('drop', e => {
+      e.preventDefault();
+      importDrop.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) processImportFile(file);
+    });
+
+    function handleImportFile(input) {
+      if (input.files[0]) processImportFile(input.files[0]);
+    }
+
+    function processImportFile(file) {
+      const nameEl   = document.getElementById('import-file-name');
+      const infoEl   = document.getElementById('import-preview-info');
+      const btnApply = document.getElementById('btn-import-apply');
+      nameEl.textContent = file.name;
+      nameEl.style.display = 'block';
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const wb     = XLSX.read(e.target.result, { type: 'array' });
+          const ws     = wb.Sheets[wb.SheetNames[0]];
+          const rows   = XLSX.utils.sheet_to_json(ws, { defval: '' });
+          const valid  = rows.filter(r => r['Diameter'] || r['diameter']);
+          if (!valid.length) throw new Error('Tidak ada data valid ditemukan.');
+          pendingImportRows = valid.map((r, i) => ({
+            id: dmNextId + i,
+            diameter: parseFloat(r['Diameter'] || r['diameter']) || 0,
+            d:        parseFloat(r['D'] || r['d']) || 0,
+            en:       String(r['en'] || r['En'] || ''),
+            sdr:      String(r['SDR'] || r['sdr'] || ''),
+            temp:     String(r['T_min_nom_max'] || r['T min/nom/max'] || '215/225/235'),
+            p1:       parseFloat(r['p1'] || r['*p1']) || 0,
+            a:        parseFloat(r['A'] || r['a']) || 0,
+            p2:       String(r['p2'] || '0 to drag pressure'),
+            t2:       parseInt(r['t2']) || 0,
+            t3max:    parseInt(r['t3_max'] || r['t3 max']) || 0,
+            t4:       parseInt(r['t4']) || 0,
+            p3:       parseFloat(r['p3'] || r['*p3']) || 0,
+            t5:       String(r['t5'] || ''),
+          }));
+          infoEl.innerHTML = `<strong>${pendingImportRows.length} baris</strong> siap diimport dari <em>${file.name}</em>.`;
+          infoEl.style.display = 'block';
+          btnApply.disabled = false;
+        } catch(err) {
+          infoEl.innerHTML = `<span style="color:var(--error-500);">Error: ${err.message}</span>`;
+          infoEl.style.display = 'block';
+          btnApply.disabled = true;
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function applyImport() {
+      if (!pendingImportRows) return;
+      dmNextId += pendingImportRows.length;
+      dmData = [...dmData, ...pendingImportRows];
+      filterDM();
+      closeImportModal();
+    }
+
+    /* ── Download template ────────────────────── */
+    function downloadTemplate() {
+      const headers = ['Diameter','D','en','SDR','T_min_nom_max','p1','A','p2','t2','t3_max','t4','p3','t5'];
+      const sample  = [500, 500, '12.3#', 41, '215/225/235', 6, 1.7, '0 to drag pressure', 166, 10, 18, 6, '890 s'];
+      const ws = XLSX.utils.aoa_to_sheet([headers, sample]);
+      ws['!cols'] = headers.map((h,i) => ({ wch: Math.max(h.length, String(sample[i]).length) + 4 }));
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Data Master');
+      XLSX.writeFile(wb, 'template_data_master_polypipe.xlsx');
+    }
+
+    /* init */
+    renderDM();
+  </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pengaturan — Polypipe Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo-box">P</div>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">POLYPIPE.id</span>
+        <span class="sidebar-brand-sub">Academy</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Utama</div>
+      <a href="admin.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="admin-users.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 17c0-3.314 2.686-6 6-6s6 2.686 6 6"/><path d="M13 3.5a3 3 0 010 5M18 17c0-2.761-2-5-4.5-5.5"/></svg>
+        Pengguna
+        <span class="nav-badge">3</span>
+      </a>
+      <a href="admin-modules.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h12v12H4z" rx="1"/><path d="M8 9h4M8 12h2"/><path d="M7 2v2M13 2v2"/></svg>
+        Modul Materi
+      </a>
+      <a href="admin-datamaster.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="10" cy="5" rx="7" ry="2.5"/><path d="M3 5v4c0 1.38 3.134 2.5 7 2.5S17 10.38 17 9V5"/><path d="M3 9v4c0 1.38 3.134 2.5 7 2.5S17 14.38 17 13V9"/></svg>
+        Data Master
+      </a>
+      <a href="admin-keuangan.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="16" height="11" rx="2"/><path d="M2 9h16"/><circle cx="6" cy="13" r="1" fill="currentColor"/></svg>
+        Keuangan
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Pengaturan</div>
+      <a href="admin-settings.html" class="nav-item active">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M15.78 4.22l-1.42 1.42M5.64 14.36l-1.42 1.42"/></svg>
+        Pengaturan
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar">AR</div>
+        <div class="user-info">
+          <div class="user-name">Admin Polypipe</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <button class="btn-logout" title="Keluar" onclick="logoutAdmin()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10H3M7 6l-4 4 4 4"/><path d="M10 3h5a1 1 0 011 1v12a1 1 0 01-1 1h-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN
+  ═══════════════════════════════════════════════ -->
+  <div class="main-wrap">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="topbar-btn" id="btn-mobile-menu" aria-label="Menu">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+        </button>
+        <div class="breadcrumb">
+          <a href="admin.html" class="breadcrumb-item" style="text-decoration:none;">Polypipe Academy</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Pengaturan</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" title="Notifikasi">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 00-6-6z"/><path d="M8 16a2 2 0 004 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="topbar-avatar" title="Admin Polypipe">AR</div>
+      </div>
+    </header>
+
+    <!-- ─────────────────────────────────────────────
+         PAGE: SETTINGS
+    ───────────────────────────────────────────── -->
+    <div class="page-content active" id="page-settings">
+      <div class="page-heading">
+        <div>
+          <h1 class="page-title">Pengaturan</h1>
+          <p class="page-subtitle">Konfigurasi aplikasi dan akun admin.</p>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
+        <!-- Profile -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Profil Admin</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;align-items:center;gap:16px;">
+              <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--prime-500),#3d69aa);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;color:#fff;">AR</div>
+              <div>
+                <div style="font-size:16px;font-weight:600;color:var(--gray-800);">Admin Polypipe</div>
+                <div style="font-size:13px;color:var(--gray-500);">admin@polypipe.id</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:13px;font-weight:500;color:var(--gray-700);">Nama</label>
+                <input type="text" value="Admin Polypipe" style="height:38px;padding:0 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:14px;font-family:Inter,sans-serif;color:var(--gray-800);outline:none;" onfocus="this.style.borderColor='var(--prime-500)'" onblur="this.style.borderColor='var(--gray-300)'"/>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:13px;font-weight:500;color:var(--gray-700);">Email</label>
+                <input type="email" value="admin@polypipe.id" style="height:38px;padding:0 12px;border:1px solid var(--gray-300);border-radius:8px;font-size:14px;font-family:Inter,sans-serif;color:var(--gray-800);outline:none;" onfocus="this.style.borderColor='var(--prime-500)'" onblur="this.style.borderColor='var(--gray-300)'"/>
+              </div>
+            </div>
+            <button class="btn btn--primary btn--sm">Simpan Perubahan</button>
+          </div>
+        </div>
+
+        <!-- App info -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Informasi Aplikasi</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--gray-100);">
+              <span style="font-size:14px;color:var(--gray-600);">Nama Aplikasi</span>
+              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">Polypipe Academy</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--gray-100);">
+              <span style="font-size:14px;color:var(--gray-600);">Versi</span>
+              <span class="badge badge--blue">v1.0.0-beta</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--gray-100);">
+              <span style="font-size:14px;color:var(--gray-600);">Total Pengguna</span>
+              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">128</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--gray-100);">
+              <span style="font-size:14px;color:var(--gray-600);">Total Modul</span>
+              <span style="font-size:14px;font-weight:500;color:var(--gray-800);">5</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="font-size:14px;color:var(--gray-600);">Status</span>
+              <span class="badge badge--green"><span class="badge-dot"></span>Aktif</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-wrap -->
+
+  <!-- Prototype banner -->
+  <div class="proto-banner" id="proto-banner">🧪 PROTOTYPE — Mock active</div>
+
+  <script>
+    document.getElementById('btn-mobile-menu').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    function logoutAdmin() {
+      localStorage.removeItem('__prototype_session');
+      window.location.href = 'login-admin.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manajemen Akun — Polypipe Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <meta name="use-mock" content="true" />
+  <meta name="api-base-url" content="/api/v1" />
+  <script>
+    window.USE_MOCK = document.querySelector('meta[name="use-mock"]')?.content === 'true';
+    window.API_BASE_URL = document.querySelector('meta[name="api-base-url"]')?.content ?? '/api/v1';
+  </script>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo-box">P</div>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">POLYPIPE.id</span>
+        <span class="sidebar-brand-sub">Academy</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Utama</div>
+      <a href="admin.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="admin-users.html" class="nav-item active">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 17c0-3.314 2.686-6 6-6s6 2.686 6 6"/><path d="M13 3.5a3 3 0 010 5M18 17c0-2.761-2-5-4.5-5.5"/></svg>
+        Pengguna
+        <span class="nav-badge">3</span>
+      </a>
+      <a href="admin-modules.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h12v12H4z" rx="1"/><path d="M8 9h4M8 12h2"/><path d="M7 2v2M13 2v2"/></svg>
+        Modul Materi
+      </a>
+      <a href="admin-datamaster.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="10" cy="5" rx="7" ry="2.5"/><path d="M3 5v4c0 1.38 3.134 2.5 7 2.5S17 10.38 17 9V5"/><path d="M3 9v4c0 1.38 3.134 2.5 7 2.5S17 14.38 17 13V9"/></svg>
+        Data Master
+      </a>
+      <a href="admin-keuangan.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="16" height="11" rx="2"/><path d="M2 9h16"/><circle cx="6" cy="13" r="1" fill="currentColor"/></svg>
+        Keuangan
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Pengaturan</div>
+      <a href="admin-settings.html" class="nav-item">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="2.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M15.78 4.22l-1.42 1.42M5.64 14.36l-1.42 1.42"/></svg>
+        Pengaturan
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar">AR</div>
+        <div class="user-info">
+          <div class="user-name">Admin Polypipe</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <button class="btn-logout" title="Keluar" onclick="logoutAdmin()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10H3M7 6l-4 4 4 4"/><path d="M10 3h5a1 1 0 011 1v12a1 1 0 01-1 1h-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN
+  ═══════════════════════════════════════════════ -->
+  <div class="main-wrap">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="topbar-btn" id="btn-mobile-menu" aria-label="Menu">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+        </button>
+        <div class="breadcrumb">
+          <a href="admin.html" class="breadcrumb-item" style="text-decoration:none;">Polypipe Academy</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Pengguna</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" title="Notifikasi">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 00-6-6z"/><path d="M8 16a2 2 0 004 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="topbar-avatar" title="Admin Polypipe">AR</div>
+      </div>
+    </header>
+
+    <!-- ─────────────────────────────────────────────
+         PAGE: USERS
+    ───────────────────────────────────────────── -->
+    <div class="page-content active" id="page-users">
+      <div class="page-heading">
+        <div>
+          <h1 class="page-title">Manajemen Akun</h1>
+          <p class="page-subtitle" id="user-subtitle">Memuat data pengguna…</p>
+        </div>
+        <button class="btn btn--primary" id="btn-tambah-user">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 4v12M4 10h12"/></svg>
+          Tambah Pengguna
+        </button>
+      </div>
+
+      <!-- Stat mini bar -->
+      <div class="stats-grid" id="user-stats-row" style="grid-template-columns:repeat(4,1fr);"></div>
+
+      <div class="card">
+        <div class="card-header" style="flex-wrap:wrap;gap:10px;">
+          <div class="filter-bar" style="flex-wrap:wrap;">
+            <div class="search-wrap">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l3.5 3.5"/></svg>
+              <input type="text" id="user-search" placeholder="Cari nama, email, no HP…" />
+            </div>
+            <select class="select-filter" id="user-filter-role">
+              <option value="">Semua Role</option>
+              <option value="admin">Admin</option>
+              <option value="pengguna">Pengguna</option>
+            </select>
+            <select class="select-filter" id="user-filter-status">
+              <option value="">Semua Status</option>
+              <option value="active">Aktif</option>
+              <option value="nonaktif">Nonaktif</option>
+              <option value="suspended">Suspended</option>
+            </select>
+            <select class="select-filter" id="user-filter-paket">
+              <option value="">Semua Paket</option>
+              <option value="free">Free</option>
+              <option value="premium">Premium</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+          <span class="badge badge--blue" id="user-count-badge" style="flex-shrink:0;">—</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:36px;"><input type="checkbox" id="user-check-all" style="accent-color:var(--prime-500);" /></th>
+                <th>Pengguna</th>
+                <th>No HP</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Paket</th>
+                <th>Tgl Daftar</th>
+                <th>Last Login</th>
+                <th style="text-align:right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="user-tbody">
+              <tr><td colspan="9">
+                <div class="empty-state">
+                  <div class="skeleton" style="width:200px;height:16px;border-radius:4px;background:var(--gray-200);animation:pulse 1.2s ease-in-out infinite;"></div>
+                </div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span class="pagination-info" id="user-pagination-info"></span>
+          <div class="pagination-pages" id="user-pagination"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-wrap -->
+
+  <!-- ══════════════════════════════════════════════
+       MODAL: TAMBAH / EDIT PENGGUNA
+  ══════════════════════════════════════════════ -->
+  <div class="amodal-overlay" id="modal-user" role="dialog" aria-modal="true" aria-labelledby="modal-user-title">
+    <div class="amodal">
+      <div class="amodal-header">
+        <span class="amodal-title" id="modal-user-title">Tambah Pengguna</span>
+        <button class="amodal-close" id="btn-close-user-modal" aria-label="Tutup">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l12 12M16 4L4 16"/></svg>
+        </button>
+      </div>
+      <div class="amodal-body">
+        <div class="form-grid">
+          <div class="form-field span2">
+            <label class="form-label" for="u-nama">Nama <sup>*</sup></label>
+            <input class="form-input" type="text" id="u-nama" name="nama" placeholder="Nama lengkap pengguna" required minlength="2" maxlength="100" autocomplete="name" />
+            <span class="form-hint" id="u-nama-error" role="alert" aria-live="polite"></span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="u-email">Email <sup>*</sup></label>
+            <input class="form-input" type="email" id="u-email" name="email" placeholder="contoh@email.com" required autocomplete="email" />
+            <span class="form-hint" id="u-email-error" role="alert" aria-live="polite"></span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="u-nohp">No HP <sup>*</sup></label>
+            <input class="form-input" type="tel" id="u-nohp" name="noHp" placeholder="08xxxxxxxxxx" required pattern="08\d{8,13}" autocomplete="tel" />
+            <span class="form-hint" id="u-nohp-error" role="alert" aria-live="polite">Diawali 08, 10–15 digit</span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="u-role">Role <sup>*</sup></label>
+            <select class="form-input" id="u-role" name="role" required>
+              <option value="">Pilih role…</option>
+              <option value="admin">Admin</option>
+              <option value="pengguna">Pengguna</option>
+            </select>
+            <span class="form-hint" id="u-role-error" role="alert" aria-live="polite"></span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="u-status">Status <sup>*</sup></label>
+            <select class="form-input" id="u-status" name="status" required>
+              <option value="active">Aktif</option>
+              <option value="nonaktif">Nonaktif</option>
+              <option value="suspended">Suspended</option>
+            </select>
+            <span class="form-hint" id="u-status-error" role="alert" aria-live="polite"></span>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="u-paket">Paket <sup>*</sup></label>
+            <select class="form-input" id="u-paket" name="paket" required>
+              <option value="free">Free</option>
+              <option value="premium">Premium</option>
+            </select>
+            <span class="form-hint" id="u-paket-error" role="alert" aria-live="polite"></span>
+          </div>
+          <div class="form-field" id="u-expired-wrap" style="display:none;">
+            <label class="form-label" for="u-expired">Tanggal Expired <sup>*</sup></label>
+            <input class="form-input" type="date" id="u-expired" name="paketExpiredAt" />
+            <span class="form-hint" id="u-expired-error" role="alert" aria-live="polite">Wajib diisi untuk paket Premium</span>
+          </div>
+        </div>
+      </div>
+      <div class="amodal-footer">
+        <button class="btn btn--outline" id="btn-cancel-user-modal">Batal</button>
+        <button class="btn btn--primary" id="btn-save-user" aria-busy="false">
+          <span id="btn-save-user-label">Simpan</span>
+          <svg id="btn-save-user-spinner" style="display:none;animation:spin 1s linear infinite;" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7" stroke-opacity=".3"/><path d="M10 3a7 7 0 017 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       MODAL: KONFIRMASI HAPUS PENGGUNA
+  ══════════════════════════════════════════════ -->
+  <div class="amodal-overlay" id="modal-user-delete" role="dialog" aria-modal="true" aria-labelledby="modal-delete-title">
+    <div class="amodal amodal--sm">
+      <div class="amodal-header">
+        <span class="amodal-title" id="modal-delete-title" style="color:var(--error-500);">Hapus Pengguna</span>
+        <button class="amodal-close" id="btn-close-delete-modal" aria-label="Tutup">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l12 12M16 4L4 16"/></svg>
+        </button>
+      </div>
+      <div class="amodal-body" style="display:flex;flex-direction:column;gap:14px;">
+        <div style="background:#fff1f0;border:1px solid #ffd5d2;border-radius:8px;padding:12px 14px;font-size:13px;color:var(--gray-700);line-height:1.6;" id="modal-delete-info"></div>
+        <p style="font-size:13px;color:var(--gray-500);">Aksi ini tidak dapat dibatalkan. Data pengguna akan dihapus permanen dari sistem.</p>
+      </div>
+      <div class="amodal-footer">
+        <button class="btn btn--outline" id="btn-cancel-delete-modal">Batal</button>
+        <button class="btn btn--danger" id="btn-confirm-delete" aria-busy="false">
+          <span id="btn-delete-label">Hapus Pengguna</span>
+          <svg id="btn-delete-spinner" style="display:none;animation:spin 1s linear infinite;" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7" stroke-opacity=".3"/><path d="M10 3a7 7 0 017 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Prototype banner -->
+  <div class="proto-banner" id="proto-banner">🧪 PROTOTYPE — Mock active</div>
+
+  <script>
+    /* Mobile menu toggle */
+    document.getElementById('btn-mobile-menu').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    function logoutAdmin() {
+      localStorage.removeItem('__prototype_session');
+      window.location.href = 'login-admin.html';
+    }
+
+    /* ── Contracts & Validators ────────────────────── */
+    const USER_STATUS = ['active', 'nonaktif', 'suspended'];
+    const USER_ROLE   = ['admin', 'pengguna'];
+    const USER_PAKET  = ['free', 'premium'];
+    const EMAIL_RE    = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const PHONE_RE    = /^08\d{8,13}$/;
+
+    function validateUserInput(input) {
+      const errors = [];
+      if (!input.nama || input.nama.trim().length < 2)  errors.push({ path:'nama',   message:'Nama minimal 2 karakter' });
+      if (input.nama && input.nama.trim().length > 100) errors.push({ path:'nama',   message:'Nama maksimal 100 karakter' });
+      if (!EMAIL_RE.test(input.email ?? ''))            errors.push({ path:'email',  message:'Format email tidak valid' });
+      if (!PHONE_RE.test(input.noHp ?? ''))             errors.push({ path:'noHp',   message:'No HP harus diawali 08 dan terdiri dari 10–15 digit' });
+      if (!USER_ROLE.includes(input.role))              errors.push({ path:'role',   message:'Role tidak valid' });
+      if (!USER_STATUS.includes(input.status))          errors.push({ path:'status', message:'Status tidak valid' });
+      if (!USER_PAKET.includes(input.paket))            errors.push({ path:'paket',  message:'Paket tidak valid' });
+      if (input.paket === 'premium' && !input.paketExpiredAt)
+        errors.push({ path:'paketExpiredAt', message:'Tanggal expired wajib diisi untuk paket Premium' });
+      return errors;
+    }
+
+    /* ── Mock data ─────────────────────────────────── */
+    let _mockUsers = [
+      { id:'1',  nama:'M. Ramadhani',    email:'m.ramadhani@email.com',   noHp:'081234567890', role:'admin',    status:'active',    paket:'premium', paketExpiredAt:'2027-01-10', tanggalDaftar:'2025-01-10T08:00:00Z', lastLogin:'2026-06-09T22:10:00Z' },
+      { id:'2',  nama:'Siti Rahayu',     email:'siti.rahayu@email.com',   noHp:'082345678901', role:'pengguna', status:'active',    paket:'premium', paketExpiredAt:'2026-12-15', tanggalDaftar:'2025-01-15T09:30:00Z', lastLogin:'2026-06-10T07:45:00Z' },
+      { id:'3',  nama:'Budi Santoso',    email:'budi.santoso@email.com',  noHp:'083456789012', role:'pengguna', status:'active',    paket:'free',    paketExpiredAt:null,          tanggalDaftar:'2025-02-01T10:00:00Z', lastLogin:'2026-06-08T14:20:00Z' },
+      { id:'4',  nama:'Agus Setiawan',   email:'agus.setiawan@email.com', noHp:'084567890123', role:'pengguna', status:'active',    paket:'premium', paketExpiredAt:'2026-11-20', tanggalDaftar:'2025-02-14T11:00:00Z', lastLogin:'2026-06-10T06:30:00Z' },
+      { id:'5',  nama:'Dewi Anggraini',  email:'dewi.anggraini@email.com',noHp:'085678901234', role:'pengguna', status:'active',    paket:'premium', paketExpiredAt:'2026-08-20', tanggalDaftar:'2025-02-20T08:30:00Z', lastLogin:'2026-06-09T19:00:00Z' },
+      { id:'6',  nama:'Hendra Gunawan',  email:'hendra.gunawan@email.com',noHp:'086789012345', role:'pengguna', status:'nonaktif',  paket:'free',    paketExpiredAt:null,          tanggalDaftar:'2025-03-05T13:00:00Z', lastLogin:'2026-04-12T10:00:00Z' },
+      { id:'7',  nama:'Rina Wulandari',  email:'rina.wulandari@email.com',noHp:'087890123456', role:'pengguna', status:'active',    paket:'premium', paketExpiredAt:'2026-07-10', tanggalDaftar:'2025-03-10T09:00:00Z', lastLogin:'2026-06-07T21:15:00Z' },
+      { id:'8',  nama:'Dwi Prasetyo',    email:'dwi.prasetyo@email.com',  noHp:'088901234567', role:'pengguna', status:'active',    paket:'free',    paketExpiredAt:null,          tanggalDaftar:'2025-03-18T15:00:00Z', lastLogin:'2026-06-05T16:40:00Z' },
+      { id:'9',  nama:'Ahmad Fauzi',     email:'ahmad.fauzi@email.com',   noHp:'089012345678', role:'pengguna', status:'suspended', paket:'premium', paketExpiredAt:'2026-05-15', tanggalDaftar:'2025-04-01T08:00:00Z', lastLogin:'2026-05-14T11:00:00Z' },
+      { id:'10', nama:'Lia Permata',     email:'lia.permata@email.com',   noHp:'081123456789', role:'pengguna', status:'suspended', paket:'premium', paketExpiredAt:'2026-05-20', tanggalDaftar:'2025-04-10T10:30:00Z', lastLogin:'2026-05-19T09:00:00Z' },
+      { id:'11', nama:'Reza Kurniawan',  email:'reza.kurniawan@email.com',noHp:'082234567890', role:'pengguna', status:'nonaktif',  paket:'free',    paketExpiredAt:null,          tanggalDaftar:'2025-04-28T07:00:00Z', lastLogin:'2026-03-10T14:00:00Z' },
+      { id:'12', nama:'Putri Handayani', email:'putri.h@email.com',       noHp:'083345678901', role:'pengguna', status:'active',    paket:'premium', paketExpiredAt:'2026-06-01', tanggalDaftar:'2025-05-05T11:00:00Z', lastLogin:'2026-06-09T08:00:00Z' },
+      { id:'13', nama:'Dedi Irawan',     email:'dedi.irawan@email.com',   noHp:'084456789012', role:'pengguna', status:'active',    paket:'free',    paketExpiredAt:null,          tanggalDaftar:'2025-05-15T09:30:00Z', lastLogin:'2026-06-10T05:50:00Z' },
+      { id:'14', nama:'Nurul Fadhilah',  email:'nurul.f@email.com',       noHp:'085567890123', role:'pengguna', status:'active',    paket:'premium', paketExpiredAt:'2026-09-22', tanggalDaftar:'2025-05-22T14:00:00Z', lastLogin:'2026-06-08T20:30:00Z' },
+      { id:'15', nama:'Anton Wijaya',    email:'anton.wijaya@email.com',  noHp:'086678901234', role:'admin',    status:'active',    paket:'premium', paketExpiredAt:'2027-06-01', tanggalDaftar:'2025-06-01T08:00:00Z', lastLogin:'2026-06-10T07:00:00Z' },
+    ];
+    let _mockNextId = 16;
+
+    function _delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+    function _maybeError(rate) {
+      if (Math.random() < (rate ?? 0.05)) throw { error: 'Terjadi kesalahan pada server (500)', message: 'Server error' };
+    }
+    function _isPaketExpired(u) {
+      return u.paket === 'premium' && u.paketExpiredAt && new Date(u.paketExpiredAt) < new Date();
+    }
+
+    async function apiGetUsers(params) {
+      console.info('[MOCK] getUsers', params);
+      await _delay(350);
+      _maybeError();
+      const { page=1, limit=10, q='', role='', status='', paket='' } = params || {};
+      let filtered = _mockUsers.filter(u => {
+        const matchQ      = !q      || u.nama.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase()) || u.noHp.includes(q);
+        const matchRole   = !role   || u.role === role;
+        const matchStatus = !status || u.status === status;
+        const matchPaket  = !paket  || (paket === 'expired' ? _isPaketExpired(u) : u.paket === paket && !_isPaketExpired(u));
+        return matchQ && matchRole && matchStatus && matchPaket;
+      });
+      const total = filtered.length;
+      const data  = filtered.slice((page-1)*limit, page*limit);
+      return { data, meta: { page, limit, total, totalPages: Math.max(1, Math.ceil(total/limit)) } };
+    }
+
+    async function apiCreateUser(input) {
+      console.info('[MOCK] createUser', input);
+      await _delay(700);
+      _maybeError();
+      if (_mockUsers.some(u => u.email === input.email))
+        throw { error: 'Email sudah terdaftar', path: 'email' };
+      const user = {
+        id: String(_mockNextId++),
+        nama:          input.nama.trim(),
+        email:         input.email.trim().toLowerCase(),
+        noHp:          input.noHp.trim(),
+        role:          input.role,
+        status:        input.status || 'active',
+        paket:         input.paket || 'free',
+        paketExpiredAt: input.paket === 'premium' ? (input.paketExpiredAt || null) : null,
+        tanggalDaftar: new Date().toISOString(),
+        lastLogin:     null,
+      };
+      _mockUsers.push(user);
+      return { data: { ...user } };
+    }
+
+    async function apiUpdateUser(id, input) {
+      console.info('[MOCK] updateUser', id, input);
+      await _delay(650);
+      _maybeError();
+      const idx = _mockUsers.findIndex(u => u.id === id);
+      if (idx === -1) throw { error: 'User tidak ditemukan' };
+      if (input.email && _mockUsers.some(u => u.email === input.email && u.id !== id))
+        throw { error: 'Email sudah digunakan user lain', path: 'email' };
+      _mockUsers[idx] = {
+        ..._mockUsers[idx], ...input,
+        paketExpiredAt: input.paket === 'free' ? null : (input.paketExpiredAt ?? _mockUsers[idx].paketExpiredAt),
+      };
+      return { data: { ..._mockUsers[idx] } };
+    }
+
+    async function apiUpdateUserStatus(id, status) {
+      console.info('[MOCK] updateUserStatus', id, status);
+      await _delay(450);
+      _maybeError();
+      if (id === '1' && status === 'suspended')
+        throw { error: 'Admin tidak dapat men-suspend akun sendiri' };
+      const idx = _mockUsers.findIndex(u => u.id === id);
+      if (idx === -1) throw { error: 'User tidak ditemukan' };
+      _mockUsers[idx].status = status;
+      return { data: { ..._mockUsers[idx] } };
+    }
+
+    async function apiDeleteUser(id) {
+      console.info('[MOCK] deleteUser', id);
+      await _delay(400);
+      _maybeError();
+      const idx = _mockUsers.findIndex(u => u.id === id);
+      if (idx === -1) throw { error: 'User tidak ditemukan' };
+      _mockUsers.splice(idx, 1);
+      return { data: { id } };
+    }
+
+    /* ── Wrappers (toggle mock/real) ─────────────── */
+    const BASE_URL = () => (window.API_BASE_URL || '/api/v1') + '/users';
+
+    async function getUsers(params) {
+      if (window.USE_MOCK !== false) return apiGetUsers(params);
+      const qs = new URLSearchParams(Object.fromEntries(Object.entries(params||{}).filter(([,v])=>v!==''&&v!=null))).toString();
+      const res = await fetch(qs ? `${BASE_URL()}?${qs}` : BASE_URL());
+      const json = await res.json(); if (!res.ok) throw json; return json;
+    }
+    async function createUser(input) {
+      if (window.USE_MOCK !== false) return apiCreateUser(input);
+      const res = await fetch(BASE_URL(), { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(input) });
+      const json = await res.json(); if (!res.ok) throw json; return json;
+    }
+    async function updateUser(id, input) {
+      if (window.USE_MOCK !== false) return apiUpdateUser(id, input);
+      const res = await fetch(`${BASE_URL()}/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(input) });
+      const json = await res.json(); if (!res.ok) throw json; return json;
+    }
+    async function updateUserStatus(id, status) {
+      if (window.USE_MOCK !== false) return apiUpdateUserStatus(id, status);
+      const res = await fetch(`${BASE_URL()}/${id}/status`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status }) });
+      const json = await res.json(); if (!res.ok) throw json; return json;
+    }
+    async function deleteUser(id) {
+      if (window.USE_MOCK !== false) return apiDeleteUser(id);
+      const res = await fetch(`${BASE_URL()}/${id}`, { method:'DELETE' });
+      const json = await res.json(); if (!res.ok) throw json; return json;
+    }
+
+    /* ── Helpers ──────────────────────────────────── */
+    const MONTHS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function fmtRelative(iso) {
+      if (!iso) return 'Belum pernah';
+      const diff = Date.now() - new Date(iso).getTime();
+      const min = Math.floor(diff / 60000);
+      if (min < 1) return 'Baru saja';
+      if (min < 60) return `${min} mnt lalu`;
+      const h = Math.floor(min / 60);
+      if (h < 24) return `${h} jam lalu`;
+      const day = Math.floor(h / 24);
+      if (day < 30) return `${day} hari lalu`;
+      return fmtDate(iso);
+    }
+
+    function initials(nama) {
+      return nama.trim().split(/\s+/).map(w => w[0].toUpperCase()).slice(0,2).join('');
+    }
+
+    const AVATAR_COLORS = ['#0d4495','#5d11a2','#4361d1','#f79009','#12b76a','#7c3aed','#ff5c46','#4361d1','#429bf4','#941c9d'];
+    function avatarColor(id) { return AVATAR_COLORS[parseInt(id) % AVATAR_COLORS.length]; }
+
+    function showToast(msg, type = 'success') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast toast--${type}`;
+      t.innerHTML = type === 'success'
+        ? `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="M7 10l2 2 4-4"/></svg>`
+        : `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="M10 7v3M10 13v.5"/></svg>`;
+      t.innerHTML += `<span>${msg}</span>`;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    function isPaketExpired(u) {
+      if (u.paket !== 'premium' || !u.paketExpiredAt) return false;
+      return new Date(u.paketExpiredAt) < new Date();
+    }
+
+    /* ── Render helpers ───────────────────────────── */
+    function statusBadge(status) {
+      const map = {
+        active:    '<span class="badge badge--green"><span class="badge-dot"></span>Aktif</span>',
+        nonaktif:  '<span class="badge badge--gray"><span class="badge-dot"></span>Nonaktif</span>',
+        suspended: '<span class="badge badge--red"><span class="badge-dot"></span>Suspended</span>',
+      };
+      return map[status] ?? status;
+    }
+
+    function roleBadge(role) {
+      return role === 'admin'
+        ? '<span class="badge badge--blue">Admin</span>'
+        : '<span class="badge badge--gray">Pengguna</span>';
+    }
+
+    function paketBadge(u) {
+      if (u.paket === 'free') return '<span class="badge badge--free">Free</span>';
+      if (isPaketExpired(u))  return `<span class="badge badge--expired">Expired<br><small style="font-size:10px;">${fmtDate(u.paketExpiredAt)}</small></span>`;
+      return `<span class="badge badge--premium">Premium<br><small style="font-size:10px;">${fmtDate(u.paketExpiredAt)}</small></span>`;
+    }
+
+    function statusSelectHtml(userId, currentStatus) {
+      const opts = [
+        { val:'active',    label:'Aktif' },
+        { val:'nonaktif',  label:'Nonaktif' },
+        { val:'suspended', label:'Suspended' },
+      ];
+      const optHtml = opts.map(o =>
+        `<option value="${o.val}" ${currentStatus===o.val?'selected':''}>${o.label}</option>`
+      ).join('');
+      return `<select class="status-inline ${currentStatus}" data-user-id="${userId}" aria-label="Ubah status">${optHtml}</select>`;
+    }
+
+    /* ── State ────────────────────────────────────── */
+    let userParams = { page: 1, limit: 10, q: '', role: '', status: '', paket: '' };
+    let lastMeta   = { total: 0, totalPages: 1 };
+    let editingId  = null;
+    let deletingId = null;
+
+    /* ── Load & render table ──────────────────────── */
+    async function loadUsers() {
+      const tbody = document.getElementById('user-tbody');
+      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">
+        <div style="width:180px;height:14px;border-radius:4px;background:var(--gray-200);animation:pulse 1.2s ease-in-out infinite;"></div>
+      </div></td></tr>`;
+      try {
+        const res  = await getUsers(userParams);
+        const list = res.data;
+        lastMeta   = res.meta;
+        renderUserTable(list);
+        renderUserPagination();
+        updateUserSubtitle(res.meta.total);
+        updateUserStats(list, res.meta.total);
+        document.getElementById('user-count-badge').textContent = `${res.meta.total} pengguna`;
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="10" cy="10" r="7"/><path d="M10 7v3M10 13v.5"/></svg>
+          <div class="empty-title">Gagal memuat data</div>
+          <div class="empty-desc">${err.message || 'Terjadi kesalahan. Coba lagi.'}</div>
+        </div></td></tr>`;
+        showToast('Gagal memuat data pengguna', 'error');
+      }
+    }
+
+    function renderUserTable(list) {
+      const tbody = document.getElementById('user-tbody');
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l3.5 3.5"/></svg>
+          <div class="empty-title">Tidak ditemukan</div>
+          <div class="empty-desc">Coba ubah kata kunci atau filter pencarian.</div>
+        </div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(u => `
+        <tr data-user-id="${u.id}">
+          <td><input type="checkbox" data-user-id="${u.id}" class="user-row-check" style="accent-color:var(--prime-500);" /></td>
+          <td>
+            <div class="user-cell">
+              <div class="user-cell-avatar" style="background:${avatarColor(u.id)}">${initials(u.nama)}</div>
+              <div>
+                <div class="user-cell-name">${u.nama}</div>
+                <div class="user-cell-email">${u.email}</div>
+              </div>
+            </div>
+          </td>
+          <td style="font-size:13px;color:var(--gray-600);">${u.noHp}</td>
+          <td>${roleBadge(u.role)}</td>
+          <td>${statusSelectHtml(u.id, u.status)}</td>
+          <td>${paketBadge(u)}</td>
+          <td style="font-size:13px;color:var(--gray-500);white-space:nowrap;">${fmtDate(u.tanggalDaftar)}</td>
+          <td style="font-size:13px;color:var(--gray-500);white-space:nowrap;">${fmtRelative(u.lastLogin)}</td>
+          <td>
+            <div class="row-actions" style="justify-content:flex-end;">
+              <button class="icon-btn btn-edit-user" data-user-id="${u.id}" title="Edit">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 3l4 4-10 10H3v-4L13 3z"/></svg>
+              </button>
+              <button class="icon-btn delete btn-delete-user" data-user-id="${u.id}" data-user-nama="${u.nama}" data-user-email="${u.email}" title="Hapus">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h14M8 6V4h4v2M6 6l1 11h6l1-11"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+
+      /* Status inline change */
+      tbody.querySelectorAll('.status-inline').forEach(sel => {
+        sel.addEventListener('change', async function() {
+          const uid = this.dataset.userId;
+          const newStatus = this.value;
+          this.disabled = true;
+          try {
+            await updateUserStatus(uid, newStatus);
+            this.className = `status-inline ${newStatus}`;
+            showToast('Status berhasil diubah');
+          } catch (err) {
+            showToast(err.error || err.message || 'Gagal mengubah status', 'error');
+            await loadUsers();
+          } finally {
+            this.disabled = false;
+          }
+        });
+      });
+
+      /* Edit buttons */
+      tbody.querySelectorAll('.btn-edit-user').forEach(btn => {
+        btn.addEventListener('click', () => openUserModal(btn.dataset.userId));
+      });
+
+      /* Delete buttons */
+      tbody.querySelectorAll('.btn-delete-user').forEach(btn => {
+        btn.addEventListener('click', () => openDeleteModal(btn.dataset.userId, btn.dataset.userNama, btn.dataset.userEmail));
+      });
+    }
+
+    function updateUserSubtitle(total) {
+      const el = document.getElementById('user-subtitle');
+      if (el) el.textContent = `${total} pengguna terdaftar.`;
+    }
+
+    function updateUserStats(list, total) {
+      const row = document.getElementById('user-stats-row');
+      if (!row) return;
+      const allActive    = list.filter(u => u.status === 'active').length;
+      const allSuspended = list.filter(u => u.status === 'suspended').length;
+      const allPremium   = list.filter(u => u.paket === 'premium').length;
+      row.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-card-top"><span class="stat-label">Total Pengguna</span>
+            <div class="stat-icon stat-icon--blue"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 17c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg></div></div>
+          <div class="stat-value">${total}</div></div>
+        <div class="stat-card">
+          <div class="stat-card-top"><span class="stat-label">Aktif (halaman ini)</span>
+            <div class="stat-icon stat-icon--green"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M7 10l2 2 4-4"/></svg></div></div>
+          <div class="stat-value">${allActive}</div></div>
+        <div class="stat-card">
+          <div class="stat-card-top"><span class="stat-label">Suspended</span>
+            <div class="stat-icon stat-icon--orange"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 7v3M10 13v.5"/></svg></div></div>
+          <div class="stat-value">${allSuspended}</div></div>
+        <div class="stat-card">
+          <div class="stat-card-top"><span class="stat-label">Premium</span>
+            <div class="stat-icon stat-icon--purple"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13l3-5 4 3 3-6 4 8H3z"/></svg></div></div>
+          <div class="stat-value">${allPremium}</div></div>`;
+    }
+
+    function renderUserPagination() {
+      const pag  = document.getElementById('user-pagination');
+      const info = document.getElementById('user-pagination-info');
+      const { page, limit, total, totalPages } = lastMeta;
+      const start = (page - 1) * limit + 1;
+      const end   = Math.min(page * limit, total);
+      if (info) info.textContent = total ? `Menampilkan ${start}–${end} dari ${total} pengguna` : 'Tidak ada data';
+      if (!pag) return;
+      pag.innerHTML = '';
+      const add = (label, p, active) => {
+        const b = document.createElement('button');
+        b.className = 'page-btn' + (active ? ' active' : '');
+        b.innerHTML = label;
+        b.onclick = () => { userParams.page = p; loadUsers(); };
+        pag.appendChild(b);
+      };
+      add('<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4l-6 6 6 6"/></svg>', Math.max(1, page-1), false);
+      for (let p = 1; p <= totalPages; p++) add(p, p, p === page);
+      add('<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 4l6 6-6 6"/></svg>', Math.min(totalPages, page+1), false);
+    }
+
+    /* ── Filters ──────────────────────────────────── */
+    let searchTimer;
+    document.getElementById('user-search')?.addEventListener('input', function() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        userParams.q = this.value.trim();
+        userParams.page = 1;
+        loadUsers();
+      }, 300);
+    });
+
+    ['user-filter-role','user-filter-status','user-filter-paket'].forEach(id => {
+      const key = id.replace('user-filter-', '');
+      document.getElementById(id)?.addEventListener('change', function() {
+        userParams[key] = this.value;
+        userParams.page = 1;
+        loadUsers();
+      });
+    });
+
+    /* ── Modal Add/Edit ───────────────────────────── */
+    function clearUserForm() {
+      ['u-nama','u-email','u-nohp','u-role','u-status','u-paket','u-expired'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = id === 'u-status' ? 'active' : (id === 'u-paket' ? 'free' : '');
+        if (el) el.setAttribute('aria-invalid', 'false');
+      });
+      ['u-nama-error','u-email-error','u-nohp-error','u-role-error','u-status-error','u-paket-error','u-expired-error'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = id === 'u-nohp-error' ? 'Diawali 08, 10–15 digit' : '';
+      });
+      toggleExpiredField('free');
+    }
+
+    function toggleExpiredField(paket) {
+      const wrap = document.getElementById('u-expired-wrap');
+      if (wrap) wrap.style.display = paket === 'premium' ? '' : 'none';
+    }
+
+    document.getElementById('u-paket')?.addEventListener('change', function() {
+      toggleExpiredField(this.value);
+    });
+
+    function openUserModal(userId = null) {
+      editingId = userId;
+      clearUserForm();
+      document.getElementById('modal-user-title').textContent = userId ? 'Edit Pengguna' : 'Tambah Pengguna';
+      document.getElementById('btn-save-user-label').textContent = userId ? 'Perbarui' : 'Simpan';
+      document.getElementById('modal-user').classList.add('open');
+      if (userId) {
+        const row = document.querySelector(`[data-user-id="${userId}"]`);
+        if (row) {
+          const nameEl  = row.querySelector('.user-cell-name');
+          const emailEl = row.querySelector('.user-cell-email');
+          if (nameEl && emailEl) {
+            document.getElementById('u-nama').value  = nameEl.textContent;
+            document.getElementById('u-email').value = emailEl.textContent;
+          }
+        }
+      }
+      document.getElementById('u-nama').focus();
+    }
+
+    function closeUserModal() {
+      document.getElementById('modal-user').classList.remove('open');
+      editingId = null;
+    }
+
+    function showFieldErrors(errors) {
+      errors.forEach(({ path, message }) => {
+        const errEl = document.getElementById(`u-${path === 'noHp' ? 'nohp' : path}-error`);
+        const inEl  = document.getElementById(`u-${path === 'noHp' ? 'nohp' : path}`);
+        if (errEl) {
+          errEl.textContent = message;
+          errEl.style.color = 'var(--error-500)';
+          errEl.classList.add('field-error');
+          setTimeout(() => errEl.classList.remove('field-error'), 400);
+        }
+        if (inEl) inEl.setAttribute('aria-invalid', 'true');
+      });
+    }
+
+    async function saveUser() {
+      const btn      = document.getElementById('btn-save-user');
+      const spinner  = document.getElementById('btn-save-user-spinner');
+      const label    = document.getElementById('btn-save-user-label');
+      btn.disabled   = true;
+      btn.setAttribute('aria-busy', 'true');
+      spinner.style.display = '';
+      label.style.display   = 'none';
+
+      const input = {
+        nama:            document.getElementById('u-nama').value.trim(),
+        email:           document.getElementById('u-email').value.trim(),
+        noHp:            document.getElementById('u-nohp').value.trim(),
+        role:            document.getElementById('u-role').value,
+        status:          document.getElementById('u-status').value,
+        paket:           document.getElementById('u-paket').value,
+        paketExpiredAt:  document.getElementById('u-expired').value || null,
+      };
+
+      try {
+        if (editingId) {
+          await updateUser(editingId, input);
+          showToast('Data pengguna berhasil diperbarui');
+        } else {
+          await createUser(input);
+          showToast('Pengguna baru berhasil ditambahkan');
+        }
+        closeUserModal();
+        await loadUsers();
+      } catch (err) {
+        if (err.validationErrors) {
+          showFieldErrors(err.validationErrors);
+        } else if (err.path) {
+          showFieldErrors([{ path: err.path, message: err.message }]);
+        } else {
+          showToast(err.error || err.message || 'Terjadi kesalahan', 'error');
+        }
+      } finally {
+        btn.disabled  = false;
+        btn.setAttribute('aria-busy', 'false');
+        spinner.style.display = 'none';
+        label.style.display   = '';
+      }
+    }
+
+    document.getElementById('btn-tambah-user')?.addEventListener('click', () => openUserModal());
+    document.getElementById('btn-save-user')?.addEventListener('click', saveUser);
+    document.getElementById('btn-close-user-modal')?.addEventListener('click', closeUserModal);
+    document.getElementById('btn-cancel-user-modal')?.addEventListener('click', closeUserModal);
+
+    /* ── Modal Delete ─────────────────────────────── */
+    function openDeleteModal(userId, nama, email) {
+      deletingId = userId;
+      document.getElementById('modal-delete-info').innerHTML =
+        `Anda akan menghapus akun <strong>${nama}</strong> (${email}) secara permanen.`;
+      document.getElementById('modal-user-delete').classList.add('open');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('modal-user-delete').classList.remove('open');
+      deletingId = null;
+    }
+
+    async function confirmDelete() {
+      if (!deletingId) return;
+      const btn     = document.getElementById('btn-confirm-delete');
+      const spinner = document.getElementById('btn-delete-spinner');
+      const label   = document.getElementById('btn-delete-label');
+      btn.disabled  = true;
+      btn.setAttribute('aria-busy', 'true');
+      spinner.style.display = '';
+      label.style.display   = 'none';
+      try {
+        await deleteUser(deletingId);
+        showToast('Pengguna berhasil dihapus');
+        closeDeleteModal();
+        await loadUsers();
+      } catch (err) {
+        showToast(err.error || err.message || 'Gagal menghapus pengguna', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.setAttribute('aria-busy', 'false');
+        spinner.style.display = 'none';
+        label.style.display   = '';
+      }
+    }
+
+    document.getElementById('btn-confirm-delete')?.addEventListener('click', confirmDelete);
+    document.getElementById('btn-close-delete-modal')?.addEventListener('click', closeDeleteModal);
+    document.getElementById('btn-cancel-delete-modal')?.addEventListener('click', closeDeleteModal);
+
+    /* Close modals on backdrop click */
+    ['modal-user','modal-user-delete'].forEach(id => {
+      document.getElementById(id)?.addEventListener('click', function(e) {
+        if (e.target === this) {
+          id === 'modal-user' ? closeUserModal() : closeDeleteModal();
+        }
+      });
+    });
+
+    /* ── Init ─────────────────────────────────────── */
+    document.getElementById('user-check-all')?.addEventListener('change', function() {
+      document.querySelectorAll('.user-row-check').forEach(c => c.checked = this.checked);
+    });
+
+    loadUsers();
+  </script>
+</body>
+</html>
