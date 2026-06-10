@@ -1,0 +1,293 @@
+#!/usr/bin/env node
+/**
+ * Generate docs/shared/openapi.yaml dari contract object js/contracts/users.js
+ * Jalankan: node scripts/generate-openapi.js
+ */
+import { writeFileSync, mkdirSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(__dirname, '..');
+
+const yaml = `openapi: '3.0.3'
+info:
+  title: Polypipe Academy API
+  description: API contract untuk Polypipe Academy — generated dari js/contracts/users.js
+  version: 1.0.0-prototype
+
+servers:
+  - url: /api/v1
+    description: API base
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      required: [id, nama, email, noHp, role, status, paket, tanggalDaftar]
+      properties:
+        id:
+          type: string
+          example: "1"
+        nama:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: M. Ramadhani
+        email:
+          type: string
+          format: email
+          example: m.ramadhani@email.com
+        noHp:
+          type: string
+          pattern: '^08\\d{8,13}$'
+          example: "081234567890"
+        role:
+          type: string
+          enum: [admin, pengguna]
+        status:
+          type: string
+          enum: [active, nonaktif, suspended]
+        paket:
+          type: string
+          enum: [free, premium]
+        paketExpiredAt:
+          type: string
+          format: date
+          nullable: true
+          example: "2027-01-10"
+        tanggalDaftar:
+          type: string
+          format: date-time
+        lastLogin:
+          type: string
+          format: date-time
+          nullable: true
+
+    UserInput:
+      type: object
+      required: [nama, email, noHp, role, status, paket]
+      properties:
+        nama:
+          type: string
+          minLength: 2
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        noHp:
+          type: string
+          pattern: '^08\\d{8,13}$'
+        role:
+          type: string
+          enum: [admin, pengguna]
+        status:
+          type: string
+          enum: [active, nonaktif, suspended]
+          default: active
+        paket:
+          type: string
+          enum: [free, premium]
+          default: free
+        paketExpiredAt:
+          type: string
+          format: date
+          nullable: true
+          description: Wajib diisi jika paket=premium
+
+    UserStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [active, nonaktif, suspended]
+
+    ListMeta:
+      type: object
+      properties:
+        page:       { type: integer }
+        limit:      { type: integer }
+        total:      { type: integer }
+        totalPages: { type: integer }
+
+    Error:
+      type: object
+      properties:
+        error:   { type: string }
+        message: { type: string }
+        path:    { type: string, description: Field yang menyebabkan error }
+
+paths:
+  /users:
+    get:
+      summary: Daftar pengguna
+      tags: [Users]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: q
+          schema: { type: string }
+          description: Search nama, email, atau no HP
+        - in: query
+          name: role
+          schema: { type: string, enum: [admin, pengguna] }
+        - in: query
+          name: status
+          schema: { type: string, enum: [active, nonaktif, suspended] }
+        - in: query
+          name: paket
+          schema: { type: string, enum: [free, premium, expired] }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/User' }
+                  meta: { $ref: '#/components/schemas/ListMeta' }
+        '401': { description: Unauthorized }
+
+    post:
+      summary: Tambah pengguna baru
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserInput' }
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/User' }
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401': { description: Unauthorized }
+
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+
+    get:
+      summary: Detail pengguna
+      tags: [Users]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/User' }
+        '404': { description: Not found }
+        '401': { description: Unauthorized }
+
+    patch:
+      summary: Update data pengguna
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/User' }
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404': { description: Not found }
+        '401': { description: Unauthorized }
+
+    delete:
+      summary: Hapus pengguna
+      tags: [Users]
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string }
+        '404': { description: Not found }
+        '401': { description: Unauthorized }
+
+  /users/{id}/status:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+
+    patch:
+      summary: Ubah status pengguna (quick change)
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserStatusInput' }
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: '#/components/schemas/User' }
+        '400':
+          description: Business rule violation (mis. admin suspend diri sendiri)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404': { description: Not found }
+        '401': { description: Unauthorized }
+`;
+
+mkdirSync(join(ROOT, 'docs', 'shared'), { recursive: true });
+writeFileSync(join(ROOT, 'docs', 'shared', 'openapi.yaml'), yaml, 'utf-8');
+console.log('✅ docs/shared/openapi.yaml generated');
