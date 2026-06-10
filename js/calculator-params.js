@@ -76,6 +76,7 @@ function calcWeldingParams(d) {
     t3_max: t3s.toFixed(1), t3s,
     t4_max: t4s.toFixed(1), t4s,
     p3: fmt(p3), t5: fmtT(t5s), t5s,
+    t6s: t5s,
     Tmin, Tnom, Tmax,
     tUnit: isMenit ? 'menit' : 'detik',
     matNote: MATERIAL_LABELS[mat] ?? mat,
@@ -93,7 +94,7 @@ function buildCycleSVGWithHighlight(params, highlightPhase = null) {
   const cw = W - ml - mr, ch = H - mt - mb;
 
   const p_high = 0.85, p_drag = 0.40, p_zero = 0.0;
-  const phases = [0.20, 0.30, 0.08, 0.12, 0.30];
+  const phases = [0.17, 0.25, 0.07, 0.11, 0.20, 0.20];  // 6 phases: t1-t6
 
   const xs = [0];
   phases.forEach(p => xs.push(xs[xs.length - 1] + p));
@@ -106,7 +107,8 @@ function buildCycleSVGWithHighlight(params, highlightPhase = null) {
     [xs[1], p_drag], [xs[2], p_drag],
     [xs[2], p_zero], [xs[3], p_zero],
     [xs[3], p_high], [xs[4], p_high],
-    [xs[5], p_high],
+    [xs[4], p_high], [xs[5], p_high],
+    [xs[5], p_high], [xs[6], p_high],
   ];
 
   const lineD = profile.map((p, i) =>
@@ -122,7 +124,7 @@ function buildCycleSVGWithHighlight(params, highlightPhase = null) {
 
   const pLabels = [
     { y: py(p_high), text: 'p1+pt' },
-    { y: py(p_drag), text: 'p2=pt' },
+    { y: py(p_drag), text: 'p2' },
   ];
 
   // Highlight overlay
@@ -143,6 +145,7 @@ function buildCycleSVGWithHighlight(params, highlightPhase = null) {
   <text x="8" y="${mt + ch / 2}" font-size="11" font-family="Inter,sans-serif" fill="#475467" text-anchor="middle" transform="rotate(-90,8,${mt + ch / 2})">p</text>
   <text x="${W - mr + 8}" y="${mt + ch + 4}" font-size="11" font-family="Inter,sans-serif" fill="#475467">t</text>
   ${pLabels.map(l => `<text x="${ml - 4}" y="${(l.y + 4).toFixed(1)}" font-size="8.5" font-family="Inter,sans-serif" fill="#0c3e88" text-anchor="end">${l.text}</text>`).join('\n  ')}
+  <text x="${(px(xs[4]) + 2).toFixed(1)}" y="${(py(p_high) - 2).toFixed(1)}" font-size="8" font-family="Inter,sans-serif" fill="#0c3e88">p3+pt</text>
   ${phaseLabels.map(l => `<text x="${l.x.toFixed(1)}" y="${(mt + ch + 14).toFixed(1)}" font-size="9" font-family="Inter,sans-serif" fill="#475467" text-anchor="middle">${l.label}</text>`).join('\n  ')}
   ${xs.slice(1, -1).map(f => `<line x1="${px(f).toFixed(1)}" y1="${(mt + ch).toFixed(1)}" x2="${px(f).toFixed(1)}" y2="${(mt + ch + 4).toFixed(1)}" stroke="#475467" stroke-width="1"/>`).join('\n  ')}
 </svg>`;

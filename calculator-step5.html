@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Polypipe Academy – Calculator Step 3: Heat Soak Fase 2</title>
+  <title>Polypipe Academy – Calculator Step 5: Build Up</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -57,29 +57,40 @@
     .step-header { display: flex; gap: 6px; align-items: center; }
     .step-icon { width: 24px; height: 24px; flex-shrink: 0; }
     .step-title { font-size: 18px; font-weight: 600; color: #1d2939; line-height: 28px; }
-    .step-subtitle { font-size: 18px; font-weight: 600; color: #1d2939; line-height: 28px; }
 
-    /* ── Timer container ── */
-    .timer-container {
-      background: #09306a; border-radius: 8px; padding: 16px;
-      display: flex; gap: 12px; align-items: stretch;
+    /* ── Pressure card (two-part) ── */
+    .pressure-card { border-radius: 8px; overflow: hidden; width: 100%; }
+    .pressure-card-top {
+      background: linear-gradient(134deg, #051d3f 3%, #0d4ca5 114%);
+      padding: 12px; text-align: center; color: #fff;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
     }
-    .timer-tile {
+    .pressure-card-bottom {
+      background: #0d4495; padding: 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .pressure-label  { font-size: 16px; font-weight: 400; line-height: 24px; color: #fff; }
+    .pressure-value  { font-size: 30px; font-weight: 500; line-height: 38px; color: #fff; }
+    .pressure-sublabel { font-size: 16px; font-weight: 500; line-height: 24px; color: #fff; }
+
+    /* ── Timer row inside card ── */
+    .card-timer { display: flex; gap: 12px; width: 100%; }
+    .card-timer-tile {
       flex: 1; background: #051d3f; border-radius: 8px; padding: 12px;
       display: flex; flex-direction: column; align-items: center; gap: 4px;
     }
-    .timer-digit {
+    .card-timer-digit {
       font-size: 36px; font-weight: 400; line-height: 44px; letter-spacing: -0.02em;
       color: #fff; font-family: 'Inter', sans-serif;
     }
-    .timer-unit {
+    .card-timer-unit {
       font-size: 14px; font-weight: 400; line-height: 20px;
       color: #b4c5de; font-family: 'Inter', sans-serif;
     }
 
-    /* ── Alarm state ── */
-    @keyframes timerPulse {
-      0%, 100% { background: #09306a; }
+    /* ── Alarm state (card bottom) ── */
+    @keyframes cardPulse {
+      0%, 100% { background: #0d4495; }
       50% { background: #7f1d1d; }
     }
     @keyframes digitShake {
@@ -87,46 +98,41 @@
       25% { transform: translateX(-2px); }
       75% { transform: translateX(2px); }
     }
-    .timer-container.alarm { animation: timerPulse .6s ease infinite; }
-    .timer-container.alarm .timer-tile { animation: digitShake .3s ease infinite; }
-    .timer-container.alarm .timer-digit { color: #fca5a5; }
+    .pressure-card-bottom.alarm { animation: cardPulse .6s ease infinite; }
+    .pressure-card-bottom.alarm .card-timer-tile { animation: digitShake .3s ease infinite; }
+    .pressure-card-bottom.alarm .card-timer-digit { color: #fca5a5; }
 
     /* ── Done state ── */
-    .timer-container.done { background: #027a48; }
-    .timer-container.done .timer-tile { background: #065f46; }
-    .timer-container.done .timer-digit { color: #a7f3d0; }
-    .timer-container.done .timer-unit  { color: #6ee7b7; }
+    .pressure-card-bottom.done { background: #027a48; }
+    .pressure-card-bottom.done .card-timer-tile { background: #065f46; }
+    .pressure-card-bottom.done .card-timer-digit { color: #a7f3d0; }
+    .pressure-card-bottom.done .card-timer-unit  { color: #6ee7b7; }
 
     /* ── Timer note ── */
-    .timer-note {
-      font-size: 12px; font-weight: 400; color: #1d2939;
-      line-height: 18px;
-    }
+    .timer-note { font-size: 12px; font-weight: 400; color: #1d2939; line-height: 18px; }
 
     /* ── Illustration card ── */
     .illus-card {
-      background: #f2f4f7; border-radius: 8px; padding: 16px;
+      background: #f2f4f7; border-radius: 8px; padding: 24px;
       display: flex; flex-direction: column; gap: 12px;
     }
-    .illus-card-title {
-      font-size: 16px; font-weight: 500; color: #1d2939; line-height: 24px;
-    }
+    .illus-card-title { font-size: 16px; font-weight: 500; color: #1d2939; line-height: 24px; }
     .illus-img-box {
       background: #fff; border-radius: 8px; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
       min-height: 160px; padding: 12px;
     }
 
-    /* ── Bottom nav ── */
+    /* ── Nav ── */
     .step-nav { display: flex; align-items: center; justify-content: flex-end; }
-    .btn-cancel {
-      background: #fff; border: 1px solid #d0d5dd; border-radius: 8px;
+    .btn-next {
+      background: #027a48; border: none; border-radius: 8px;
       height: 48px; padding: 0 16px;
       display: flex; align-items: center; gap: 8px;
-      font-size: 16px; font-weight: 600; color: #1d2939;
+      font-size: 16px; font-weight: 600; color: #fff;
       font-family: 'Inter', sans-serif; cursor: pointer; transition: opacity .15s;
     }
-    .btn-cancel:active { opacity: .8; }
+    .btn-next:active { opacity: .85; }
 
     /* ── Empty state ── */
     .empty-state {
@@ -185,70 +191,78 @@ function renderEmpty() {
 
 function renderStep(d) {
   const p = calcWeldingParams(d);
-  remainingSeconds = Math.round(p.t2s);
+  remainingSeconds = Math.round(p.t4s);
 
   const initial = formatCountdown(remainingSeconds);
 
   document.getElementById('main-body').innerHTML = `
     <!-- Progress bar -->
-    <div class="progress-bar" role="progressbar" aria-label="Langkah 3 dari 5" aria-valuenow="3" aria-valuemin="1" aria-valuemax="5">
+    <div class="progress-bar" role="progressbar" aria-label="Langkah 5 dari 7" aria-valuenow="5" aria-valuemin="1" aria-valuemax="7">
       <div class="progress-bar-seg active"></div>
       <div class="progress-bar-seg active"></div>
-      <div class="progress-bar-seg"></div>
-      <div class="progress-bar-seg"></div>
+      <div class="progress-bar-seg active"></div>
+      <div class="progress-bar-seg active"></div>
       <div class="progress-bar-seg"></div>
     </div>
 
     <!-- Step content -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
+    <div style="display:flex;flex-direction:column;gap:12px;">
       <!-- Step header -->
       <div class="step-header">
         <svg class="step-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 3C10.34 3 9 4.34 9 6v6a3 3 0 006 0V6c0-1.66-1.34-3-3-3z" stroke="#344054" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M9 15.24A5 5 0 1015 15.24" stroke="#344054" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="12" cy="17" r="1.5" fill="#344054"/>
+          <polyline points="3,17 8,12 12,15 19,7" stroke="#1d2939" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="15,7 19,7 19,11" stroke="#1d2939" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <h2 class="step-title">HEAT SOAK</h2>
+        <h2 class="step-title">BUILD UP</h2>
       </div>
 
-      <!-- Sub-heading -->
-      <p class="step-subtitle">Fase 2</p>
-
-      <!-- Timer -->
-      <div class="timer-container" id="timer-container"
-           role="timer" aria-live="polite"
-           aria-label="Countdown heat soak">
-        <div class="timer-tile">
-          <span class="timer-digit" id="t-hours">${initial.h}</span>
-          <span class="timer-unit">Jam</span>
+      <!-- Two-part pressure + timer card -->
+      <div class="pressure-card" role="region" aria-label="Target tekanan dan waktu build up">
+        <div class="pressure-card-top">
+          <p class="pressure-label">Tekan Sampai</p>
+          <p class="pressure-value">${p.p3} Bar</p>
         </div>
-        <div class="timer-tile">
-          <span class="timer-digit" id="t-minutes">${initial.m}</span>
-          <span class="timer-unit">Menit</span>
-        </div>
-        <div class="timer-tile">
-          <span class="timer-digit" id="t-seconds">${initial.s}</span>
-          <span class="timer-unit">Detik</span>
+        <div class="pressure-card-bottom" id="timer-card-bottom">
+          <p class="pressure-sublabel">Di dalam</p>
+          <div class="card-timer" role="timer" aria-live="polite" aria-label="Waktu build up tersisa">
+            <div class="card-timer-tile">
+              <span class="card-timer-digit" id="t-hours">${initial.h}</span>
+              <span class="card-timer-unit">Jam</span>
+            </div>
+            <div class="card-timer-tile">
+              <span class="card-timer-digit" id="t-minutes">${initial.m}</span>
+              <span class="card-timer-unit">Menit</span>
+            </div>
+            <div class="card-timer-tile">
+              <span class="card-timer-digit" id="t-seconds">${initial.s}</span>
+              <span class="card-timer-unit">Detik</span>
+            </div>
+          </div>
         </div>
       </div>
 
       <p class="timer-note">
-        Halaman atau step selanjutnya menunggu waktu habis. alarm muncul selama 10 detik terakhir
+        Reminder, halaman atau step selanjutnya menunggu waktu habis. alarm muncul selama 10 detik terakhir
       </p>
 
       <!-- Illustration -->
       <div class="illus-card" role="region" aria-label="Ilustrasi siklus pengelasan">
         <p class="illus-card-title">Ilustrasi</p>
         <div class="illus-img-box">
-          ${buildCycleSVGWithHighlight(p, 1)}
+          ${buildCycleSVGWithHighlight(p, 3)}
         </div>
       </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="step-nav" aria-label="Navigasi langkah">
-      <button class="btn-cancel" onclick="cancelProcess()" aria-label="Batalkan dan kembali ke kalkulator">
-        Batalkan Proses
+    <!-- Navigation (hidden until timer done) -->
+    <nav class="step-nav" id="step-nav" aria-label="Navigasi langkah" style="display:none;">
+      <button class="btn-next"
+              onclick="location.href='calculator-step6.html'"
+              aria-label="Lanjut ke Cooling">
+        Selanjutnya
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M4 10h12M10 4l6 6-6 6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </button>
     </nav>
   `;
@@ -272,56 +286,31 @@ function startCountdown() {
 }
 
 function updateTimerDisplay() {
-  const parts = formatCountdown(remainingSeconds);
   const hEl = document.getElementById('t-hours');
   const mEl = document.getElementById('t-minutes');
   const sEl = document.getElementById('t-seconds');
-  const container = document.getElementById('timer-container');
-  if (!hEl || !mEl || !sEl || !container) return;
+  const bottom = document.getElementById('timer-card-bottom');
+  if (!hEl || !mEl || !sEl || !bottom) return;
 
+  const parts = formatCountdown(remainingSeconds);
   hEl.textContent = parts.h;
   mEl.textContent = parts.m;
   sEl.textContent = parts.s;
 
   if (remainingSeconds <= 10 && remainingSeconds > 0) {
-    container.classList.add('alarm');
-    container.classList.remove('done');
-    container.setAttribute('aria-label', `Alarm! ${remainingSeconds} detik tersisa`);
+    bottom.classList.add('alarm');
+    bottom.classList.remove('done');
   } else if (remainingSeconds <= 0) {
-    container.classList.remove('alarm');
-    container.classList.add('done');
+    bottom.classList.remove('alarm');
+    bottom.classList.add('done');
   } else {
-    container.classList.remove('alarm', 'done');
+    bottom.classList.remove('alarm', 'done');
   }
 }
 
 function onTimerDone() {
-  const container = document.getElementById('timer-container');
-  if (container) {
-    container.classList.remove('alarm');
-    container.classList.add('done');
-    container.setAttribute('aria-label', 'Heat soak selesai');
-  }
-
-  // Replace cancel button with "Selanjutnya" after timer done
-  const nav = document.querySelector('.step-nav');
-  if (nav) {
-    nav.innerHTML = `
-      <button class="btn-cancel" onclick="cancelProcess()" style="margin-right:auto;">
-        Batalkan Proses
-      </button>
-      <button style="background:#027a48;border:none;border-radius:8px;height:48px;padding:0 16px;
-                     display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;
-                     color:#fff;font-family:'Inter',sans-serif;cursor:pointer;"
-              onclick="location.href='calculator-step4.html'"
-              aria-label="Lanjut ke langkah berikutnya">
-        Selanjutnya
-        <svg width="20" height="20" fill="none" aria-hidden="true">
-          <path d="M4 10h12M10 4l6 6-6 6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>`;
-    nav.style.justifyContent = 'space-between';
-  }
+  const nav = document.getElementById('step-nav');
+  if (nav) nav.style.display = 'flex';
 }
 
 function cancelProcess() {
