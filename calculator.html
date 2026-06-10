@@ -37,8 +37,26 @@
       padding: 52px 24px 24px;
       display: flex; align-items: center; gap: 12px;
       flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
     }
-    .calc-header-title { font-size: 24px; font-weight: 600; color: #fff; line-height: 32px; }
+    .calc-header::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('image/Ornament-header.png') no-repeat right top;
+      background-size: cover;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+    .calc-header .btn-back {
+      background: transparent;
+      color: #fff;
+      position: relative; z-index: 1;
+    }
+    .calc-header .btn-back:hover,
+    .calc-header .btn-back:active { background: transparent; }
+    .calc-header-title { font-size: 24px; font-weight: 600; color: #fff; line-height: 32px; position: relative; z-index: 1; }
 
     /* ── Form body ── */
     .calc-body { padding: 24px; display: flex; flex-direction: column; gap: 0; }
