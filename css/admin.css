@@ -20,6 +20,7 @@
   --gray-700: #344054;
   --gray-800: #1d2939;
   --sidebar-w: 248px;
+  --sidebar-collapsed-w: 64px;
 }
 
 body {
@@ -45,34 +46,34 @@ body {
   height: 100vh;
   overflow-y: auto;
   z-index: 50;
-  transition: transform .2s;
+  transition: width .2s, transform .2s;
+  overflow-x: hidden;
 }
+
+/* ── Collapsed (desktop minimize) ───────────────── */
+.sidebar.collapsed { width: var(--sidebar-collapsed-w); }
+.sidebar.collapsed .sidebar-logo-img { display: none; }
+.sidebar.collapsed .sidebar-section-label { display: none; }
+.sidebar.collapsed .nav-item { justify-content: center; padding: 10px 0; }
+.sidebar.collapsed .nav-label { display: none; }
+.sidebar.collapsed .nav-badge { display: none; }
+.sidebar.collapsed .user-info { display: none; }
+.sidebar.collapsed .user-row { justify-content: center; gap: 0; flex-direction: column; padding: 8px 0; }
+.sidebar.collapsed ~ .main-wrap { margin-left: var(--sidebar-collapsed-w); }
 .sidebar::-webkit-scrollbar { width: 4px; }
 .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 4px; }
 
 .sidebar-brand {
-  padding: 24px 20px 20px;
+  padding: 20px 20px 18px;
   display: flex;
   align-items: center;
-  gap: 10px;
   border-bottom: 1px solid rgba(255,255,255,.1);
 }
-.sidebar-logo-box {
-  width: 36px;
-  height: 36px;
-  background: rgba(255,255,255,.15);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 15px;
-  color: #fff;
-  flex-shrink: 0;
+.sidebar-logo-img {
+  max-width: 148px;
+  height: auto;
+  display: block;
 }
-.sidebar-brand-text { display: flex; flex-direction: column; line-height: 1.15; }
-.sidebar-brand-name { font-size: 14px; font-weight: 600; color: #fff; }
-.sidebar-brand-sub  { font-size: 10px; color: rgba(255,255,255,.5); letter-spacing: .5px; text-transform: uppercase; }
 
 .sidebar-section {
   padding: 20px 12px 8px;
@@ -172,6 +173,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  transition: margin-left .2s;
 }
 
 /* ── Topbar ─────────────────────────────────────── */
