@@ -12,7 +12,8 @@ export const PAGE_STATUS_MAP = {
   '/index.html':        'progress',
   '/splash.html':       'progress',
   '/welcome.html':      'progress',
-  '/calculator.html':   'progress',
+  '/calculator.html':         'progress',
+  '/calculator-result.html':  'progress',
 };
 
 export const STATUS_META = {

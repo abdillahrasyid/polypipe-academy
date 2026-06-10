@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Calculator Parameter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <meta name="use-mock" content="true" />
+  <meta name="api-base-url" content="/api/v1" />
+  <script>
+    window.USE_MOCK    = document.querySelector('meta[name="use-mock"]')?.content === 'true';
+    window.API_BASE_URL = document.querySelector('meta[name="api-base-url"]')?.content ?? '/api/v1';
+  </script>
+
+  <style>
+    body { background: var(--gray-50); overflow-y: auto; }
+
+    /* ── Proto banner ── */
+    .proto-banner {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #1d4ed8; color: #fff;
+      font-size: 11px; font-weight: 500;
+      text-align: center; padding: 4px 12px;
+      z-index: 9999; font-family: 'Inter', sans-serif; display: none;
+    }
+    .proto-banner.visible { display: block; }
+    body.has-banner .calc-header { padding-top: 65px; }
+
+    /* ── Header ── */
+    .calc-header {
+      background: var(--prime-500);
+      padding: 52px 24px 24px;
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .calc-header-title { font-size: 24px; font-weight: 600; color: #fff; line-height: 32px; }
+
+    /* ── Body ── */
+    .calc-body { padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── Section card ── */
+    .section-card {
+      background: #f1f8ff; border: 1px solid #b3d7fb;
+      border-radius: 12px; padding: 16px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .section-card-title {
+      font-size: 16px; font-weight: 600;
+      color: var(--prime-500); line-height: 24px;
+    }
+    .data-rows { display: flex; flex-direction: column; }
+    .data-row {
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .data-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .data-row:first-child { padding-top: 0; }
+    .data-row-label { font-size: 12px; font-weight: 400; color: var(--gray-600); line-height: 18px; }
+    .data-row-value { font-size: 16px; font-weight: 600; color: var(--gray-800); line-height: 24px; }
+
+    /* ── Heater temp card ── */
+    .heater-card {
+      background: #f1f8ff; border: 1px solid #b3d7fb;
+      border-radius: 12px; padding: 12px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .heater-label { font-size: 14px; font-weight: 400; color: var(--gray-800); }
+    .heater-tiles { display: flex; gap: 12px; }
+    .heater-tile {
+      flex: 1; padding: 12px 14px; border-radius: 8px;
+      border: 1px solid var(--prime-500);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px;
+      font-size: 16px; font-weight: 400; color: var(--gray-700);
+      line-height: 24px; text-align: center;
+    }
+    .heater-tile.active { background: var(--prime-500); color: #fff; border-color: var(--prime-500); }
+    .heater-tile.passive { background: #e7ecf4; }
+    .heater-tile-label { font-size: 16px; line-height: 24px; }
+    .heater-tile-value { font-size: 16px; font-weight: 400; line-height: 24px; }
+    .heater-note { font-size: 12px; color: var(--gray-600); line-height: 18px; }
+
+    /* ── Welding parameters block ── */
+    .welding-block {
+      display: flex; flex-direction: column;
+      border-radius: 8px; overflow: hidden;
+    }
+    .welding-header {
+      background: #072552; padding: 14px;
+      display: flex; align-items: center;
+    }
+    .welding-header-title { font-size: 14px; font-weight: 600; color: #fff; line-height: 20px; }
+    .welding-body {
+      background: var(--prime-600);
+      padding: 12px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .param-card {
+      background: #fff; border-radius: 8px;
+      padding: 12px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .param-card-title { font-size: 16px; font-weight: 600; color: #09306a; line-height: 24px; }
+    .param-rows { display: flex; flex-direction: column; gap: 4px; }
+    .param-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0;
+    }
+    .param-row + .param-row { padding-top: 4px; border-top: 1px solid var(--gray-200); margin-top: 4px; }
+    .param-row-label { font-size: 14px; font-weight: 400; color: var(--gray-600); line-height: 20px; flex: 1; }
+    .param-row-right { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: flex-end; }
+    .param-row-value { font-size: 14px; font-weight: 600; color: var(--prime-600); line-height: 20px; white-space: nowrap; }
+    .param-row-unit { font-size: 12px; font-weight: 400; color: var(--gray-600); line-height: 18px; width: 36px; }
+
+    /* ── Ilustrasi ── */
+    .ilustrasi-card {
+      background: var(--gray-100); border-radius: 8px;
+      padding: 24px; display: flex; flex-direction: column; gap: 16px;
+      align-items: center;
+    }
+    .ilustrasi-title { font-size: 16px; font-weight: 500; color: var(--gray-800); align-self: flex-start; }
+
+    /* ── Welding cycle SVG diagram ── */
+    .weld-chart { width: 100%; border-radius: 8px; }
+
+    /* ── Submit button (green) ── */
+    .btn-next {
+      width: 100%; height: 48px;
+      background: #027a48; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 16px; font-weight: 600;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity .15s;
+    }
+    .btn-next:active { opacity: .85; }
+    .btn-next svg { flex-shrink: 0; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center; padding: 60px 24px;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+    }
+    .empty-state-title { font-size: 16px; font-weight: 600; color: var(--gray-800); }
+    .empty-state-sub   { font-size: 14px; color: var(--gray-600); line-height: 22px; }
+
+    /* ── Animations ── */
+    .calc-header { animation: fadeIn .3s ease both; }
+    .calc-body   { animation: fadeIn .35s .1s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- Prototype banner -->
+<div class="proto-banner" id="proto-banner" aria-live="polite">🧪 PROTOTYPE — Mock active</div>
+
+<!-- SVG sprites -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="ico-arrow-left" viewBox="0 0 24 24">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+  </symbol>
+  <symbol id="ico-arrow-right" viewBox="0 0 20 20" fill="none">
+    <path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<!-- ── Header ── -->
+<header class="calc-header">
+  <button class="btn-back" onclick="history.back()" aria-label="Kembali ke halaman sebelumnya">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><use href="#ico-arrow-left"/></svg>
+  </button>
+  <h1 class="calc-header-title">Calculator</h1>
+</header>
+
+<!-- ── Body ── -->
+<main class="calc-body" id="main-body">
+  <!-- Diisi via JS -->
+</main>
+
+<!-- Footer -->
+<footer class="footer-bar">
+  <span class="footer-copy">© 2026 polypipe.id academy</span>
+  <div class="footer-logo">
+    <img src="image/logo-polypipe-footer.png" alt="Polypipe Academy" height="30"
+         style="display:block;object-fit:contain;"
+         onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'footer-logo-text',innerHTML:'<span class=t1>POLYPIPE.id</span><span class=t2>ACADEMY</span>'}))"/>
+  </div>
+</footer>
+
+<script>
+/* ── Label maps ── */
+const WELDING_LABELS = {
+  'DVS2207-1': 'DVS 2207-1',
+  'ISO21307':  'ISO 21307',
+  'ASTMF2620': 'ASTM F2620',
+  'EN12201':   'EN 12201',
+  'SNI7058':   'SNI 7058',
+};
+const MATERIAL_LABELS = {
+  'PE100': 'PE100', 'PE80': 'PE80', 'PPR': 'PP-R', 'PVDF': 'PVDF',
+};
+const SUHU_LABELS = {
+  'below10': '< 10°C', '10to20': '10°C – 20°C',
+  '21to30':  '21°C – 30°C', '31to40': '31°C – 40°C', 'above40': '> 40°C',
+};
+const DIAMETER_LABELS = {
+  '20':'20 mm','25':'25 mm','32':'32 mm','40':'40 mm','50':'50 mm',
+  '63':'63 mm','75':'75 mm','90':'90 mm','110':'110 mm','125':'125 mm',
+  '160':'160 mm','200':'200 mm','250':'250 mm','315':'315 mm',
+};
+const SDR_LABELS = {
+  '6':'SDR 6','7.4':'SDR 7.4','9':'SDR 9','11':'SDR 11',
+  '13.6':'SDR 13.6','17':'SDR 17','21':'SDR 21','26':'SDR 26',
+};
+
+/* ── Welding parameter formulas (DVS 2207-1 / ISO 21307 approximation) ── */
+function calcWeldingParams(d) {
+  const od      = parseFloat(d.diameterLuar);
+  const sdr     = parseFloat(d.sdr);
+  const pt      = parseFloat(d.dragPressure);
+  const pa      = parseFloat(d.pistonArea);
+  const isCM2   = d.pistonAreaUnit === 'CM2';
+  const isMenit = d.satuanWaktu === 'Menit';
+  const mat     = d.materialPipa;
+
+  const e        = od / sdr;   // wall thickness mm
+  const Amm2     = isCM2 ? pa * 100 : pa;  // piston area mm²
+  const A_pipe   = Math.PI * e * (od - e); // pipe cross-section mm²
+
+  const sigma = { PE100: 0.15, PE80: 0.10, PPR: 0.15, PVDF: 0.20 }[mat] ?? 0.15;
+  const F      = sigma * A_pipe;          // jointing force N
+  const p_join = (F / Amm2) * 10;        // bar
+
+  const p1pt = p_join + pt;
+  const p2pt = pt;
+  const p3   = p_join + pt;
+
+  // Times in seconds
+  const t1s = Math.max(5, e * 2.1);
+  const t2s = Math.max(5, e * 10);
+  const t3s = od <= 90 ? 5 : od <= 315 ? 6 : 8;
+  const t4s = od <= 90 ? 6 : od <= 315 ? 8 : 11;
+  const t5s = Math.max(15, e * 60);
+
+  const fmt = (v, decimals = 2) => parseFloat(v.toFixed(decimals));
+  const fmtT = (s) => isMenit
+    ? `${(s / 60).toFixed(2)}`
+    : `${s.toFixed(2)}`;
+
+  const A_bead = Math.max(0.5, e * 0.5);
+
+  // Heater plate temperatures per material
+  const temps = {
+    PE100: [200, 220, 240],
+    PE80:  [200, 210, 220],
+    PPR:   [250, 260, 270],
+    PVDF:  [260, 270, 280],
+  };
+  const [Tmin, Tnom, Tmax] = temps[mat] ?? temps.PE100;
+
+  return {
+    e:      fmt(e),
+    p1pt:   fmt(p1pt), t1:   fmtT(t1s),
+    A_bead: fmt(A_bead),
+    p2pt:   fmt(p2pt), t2:   fmtT(t2s),
+    t3_max: t3s.toFixed(1),
+    t4_max: t4s.toFixed(1),
+    p3:     fmt(p3),   t5:   fmtT(t5s),
+    Tmin, Tnom, Tmax,
+    tUnit:  isMenit ? 'menit' : 'detik',
+    matNote: MATERIAL_LABELS[mat] ?? mat,
+  };
+}
+
+/* ── Welding cycle SVG ── */
+function buildCycleSVG(params) {
+  const W = 300, H = 130;
+  const ml = 36, mr = 12, mt = 14, mb = 28;
+  const cw = W - ml - mr, ch = H - mt - mb;
+
+  // Pressure levels (relative 0–1)
+  const p_high = 0.85;  // p1+pt = p3
+  const p_drag = 0.40;  // p2 = drag pressure (shown as fraction)
+  const p_zero = 0.0;
+
+  // Phase widths (relative, sum = 1)
+  const phases = [0.20, 0.30, 0.08, 0.12, 0.30]; // t1,t2,t3,t4,t5
+
+  // X positions
+  const xs = [0];
+  phases.forEach(p => xs.push(xs[xs.length - 1] + p));
+
+  const px = f => ml + f * cw;
+  const py = f => mt + (1 - f) * ch;
+
+  // Pressure profile: start high, drop to drag, drop to 0, rise high, hold
+  const profile = [
+    [xs[0], p_high], [xs[1], p_high],   // t1: bead-up high
+    [xs[1], p_drag], [xs[2], p_drag],   // t2: heat soak at drag
+    [xs[2], p_zero], [xs[3], p_zero],   // t3: heater removal
+    [xs[3], p_high], [xs[4], p_high],   // t4: bead-up changeover + t5 cooling
+    [xs[5], p_high],
+  ];
+
+  const lineD = profile.map((p, i) =>
+    `${i === 0 ? 'M' : 'L'}${px(p[0]).toFixed(1)},${py(p[1]).toFixed(1)}`
+  ).join(' ');
+
+  // Dashed reference lines
+  const dashHigh = `M${ml},${py(p_high).toFixed(1)} L${(W - mr).toFixed(1)},${py(p_high).toFixed(1)}`;
+  const dashDrag = `M${ml},${py(p_drag).toFixed(1)} L${(W - mr).toFixed(1)},${py(p_drag).toFixed(1)}`;
+
+  // Phase label x positions (midpoint of each phase)
+  const phaseLabels = phases.map((w, i) => ({
+    x: px(xs[i] + w / 2),
+    label: `t${i + 1}`,
+  }));
+
+  // Pressure labels
+  const pLabels = [
+    { y: py(p_high), text: 'p1+pt' },
+    { y: py(p_drag), text: 'p2=pt' },
+  ];
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" class="weld-chart" role="img" aria-label="Diagram siklus pengelasan butt fusion">
+  <!-- Grid dashes -->
+  <path d="${dashHigh}" stroke="#b3d7fb" stroke-width="1" stroke-dasharray="4 3" fill="none"/>
+  <path d="${dashDrag}" stroke="#d0d5dd" stroke-width="1" stroke-dasharray="4 3" fill="none"/>
+
+  <!-- Pressure profile -->
+  <path d="${lineD}" stroke="#0d4495" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+
+  <!-- Axes -->
+  <line x1="${ml}" y1="${mt}" x2="${ml}" y2="${mt + ch}" stroke="#344054" stroke-width="1.2"/>
+  <line x1="${ml}" y1="${mt + ch}" x2="${W - mr}" y2="${mt + ch}" stroke="#344054" stroke-width="1.2"/>
+
+  <!-- Y-axis label -->
+  <text x="8" y="${mt + ch / 2}" font-size="11" font-family="Inter,sans-serif" fill="#475467" text-anchor="middle" transform="rotate(-90,8,${mt + ch / 2})">p</text>
+
+  <!-- X-axis label -->
+  <text x="${W - mr + 8}" y="${mt + ch + 4}" font-size="11" font-family="Inter,sans-serif" fill="#475467">t</text>
+
+  <!-- Pressure labels -->
+  ${pLabels.map(l => `<text x="${ml - 4}" y="${(l.y + 4).toFixed(1)}" font-size="8.5" font-family="Inter,sans-serif" fill="#0c3e88" text-anchor="end">${l.text}</text>`).join('\n  ')}
+
+  <!-- Phase labels (x-axis) -->
+  ${phaseLabels.map(l => `<text x="${l.x.toFixed(1)}" y="${(mt + ch + 14).toFixed(1)}" font-size="9" font-family="Inter,sans-serif" fill="#475467" text-anchor="middle">${l.label}</text>`).join('\n  ')}
+
+  <!-- Phase dividers (tick marks) -->
+  ${xs.slice(1, -1).map(f => `<line x1="${px(f).toFixed(1)}" y1="${(mt + ch).toFixed(1)}" x2="${px(f).toFixed(1)}" y2="${(mt + ch + 4).toFixed(1)}" stroke="#475467" stroke-width="1"/>`).join('\n  ')}
+</svg>`;
+}
+
+/* ── Render page ── */
+function renderEmpty() {
+  document.getElementById('main-body').innerHTML = `
+    <div class="empty-state" role="alert">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="#d0d5dd" stroke-width="1.5"/>
+        <path d="M12 8v4M12 16h.01" stroke="#98a2b3" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <p class="empty-state-title">Tidak ada data kalkulator</p>
+      <p class="empty-state-sub">Silakan isi form kalkulator terlebih dahulu.</p>
+      <button class="btn" style="background:var(--prime-500);color:#fff;border-radius:8px;height:44px;padding:0 24px;font-size:15px;"
+              onclick="location.href='calculator.html'">
+        Ke Kalkulator
+      </button>
+    </div>`;
+}
+
+function renderResult(d) {
+  const p   = calcWeldingParams(d);
+  const body = document.getElementById('main-body');
+
+  const dataRow = (label, value) => `
+    <div class="data-row">
+      <span class="data-row-label">${label}</span>
+      <span class="data-row-value">${value}</span>
+    </div>`;
+
+  const paramRow = (label, value, unit, isFirst = false) => `
+    <div class="param-row" ${isFirst ? '' : ''}>
+      <span class="param-row-label">${label}</span>
+      <div class="param-row-right">
+        <span class="param-row-value">${value}</span>
+        <span class="param-row-unit">${unit}</span>
+      </div>
+    </div>`;
+
+  const paramCard = (title, rows) => `
+    <div class="param-card">
+      <p class="param-card-title">${title}</p>
+      <div class="param-rows">${rows}</div>
+    </div>`;
+
+  const pistonDisplay = `${d.pistonArea} ${d.pistonAreaUnit === 'CM2' ? 'CM²' : 'MM²'}`;
+  const diamDisplay   = DIAMETER_LABELS[d.diameterLuar] ?? d.diameterLuar;
+  const suhuDisplay   = SUHU_LABELS[d.suhuRuangan] ?? d.suhuRuangan;
+
+  body.innerHTML = `
+    <!-- Parameter Pengelasan -->
+    <section class="section-card" aria-label="Parameter Pengelasan">
+      <p class="section-card-title">Parameter Pengelasan</p>
+      <div class="data-rows">
+        ${dataRow('Machine Name', d.machine || '—')}
+        ${dataRow('Piston Area', pistonDisplay)}
+      </div>
+    </section>
+
+    <!-- PIPE -->
+    <section class="section-card" aria-label="Data Pipa">
+      <p class="section-card-title">PIPE</p>
+      <div class="data-rows">
+        ${dataRow('Standard',             WELDING_LABELS[d.weldingStandard] ?? d.weldingStandard)}
+        ${dataRow('Material Pipa',        MATERIAL_LABELS[d.materialPipa] ?? d.materialPipa)}
+        ${dataRow('Diameter Luar',        diamDisplay)}
+        ${dataRow('SDR (Ketebalan)',       SDR_LABELS[d.sdr] ?? d.sdr)}
+        ${dataRow('Ketebalan',            `${p.e} mm`)}
+        ${dataRow('Drag Preasure (pt)',   `pt = ${d.dragPressure} bar`)}
+        ${dataRow('Suhu Ruangan',         suhuDisplay)}
+      </div>
+    </section>
+
+    <!-- Heater Plate Temperature -->
+    <div class="heater-card" role="region" aria-label="Heater Plate Temperature">
+      <p class="heater-label">Heater Plate Temperature</p>
+      <div class="heater-tiles" role="group" aria-label="Rentang suhu heater plate">
+        <div class="heater-tile active">
+          <span class="heater-tile-label">Tmin</span>
+          <span class="heater-tile-value">${p.Tmin}°C</span>
+        </div>
+        <div class="heater-tile passive">
+          <span class="heater-tile-label">Tnom</span>
+          <span class="heater-tile-value">${p.Tnom}°C</span>
+        </div>
+        <div class="heater-tile passive">
+          <span class="heater-tile-label">Tmax</span>
+          <span class="heater-tile-value">${p.Tmax}°C</span>
+        </div>
+      </div>
+      <p class="heater-note">*Acuan Standard dari material ${p.matNote}</p>
+    </div>
+
+    <!-- Welding Parameters -->
+    <div class="welding-block" role="region" aria-label="Welding Parameters">
+      <div class="welding-header">
+        <span class="welding-header-title">Welding Parameters</span>
+      </div>
+      <div class="welding-body">
+        ${paramCard('Bead-up',
+            paramRow('p1+pt', p.p1pt, 'bar') +
+            paramRow('t1',    p.t1,   p.tUnit)
+        )}
+        ${paramCard('Bead Size',
+            paramRow('A', p.A_bead, 'mm')
+        )}
+        ${paramCard('Heat Soak',
+            paramRow('p2=pt', p.p2pt, 'bar') +
+            paramRow('t2',    p.t2,   p.tUnit)
+        )}
+        ${paramCard('Heater Plate Removal',
+            paramRow('t3 max', p.t3_max, p.tUnit)
+        )}
+        ${paramCard('Bead-up Time',
+            paramRow('t4 max', p.t4_max, p.tUnit)
+        )}
+        ${paramCard('Cooling (Pressure)',
+            paramRow('P3', p.p3, 'bar') +
+            paramRow('t5', p.t5, p.tUnit)
+        )}
+      </div>
+    </div>
+
+    <!-- Ilustrasi -->
+    <div class="ilustrasi-card" role="region" aria-label="Diagram siklus pengelasan">
+      <p class="ilustrasi-title">Ilustrasi</p>
+      ${buildCycleSVG(p)}
+    </div>
+
+    <!-- Next button -->
+    <button class="btn-next" onclick="alert('Step selanjutnya belum tersedia.')"
+            aria-label="Lanjut ke step berikutnya">
+      Selanjutnya
+      <svg width="20" height="20" fill="none" aria-hidden="true"><use href="#ico-arrow-right" stroke="#fff"/></svg>
+    </button>
+  `;
+}
+
+/* ── Init ── */
+(function init() {
+  if (window.USE_MOCK) {
+    const banner = document.getElementById('proto-banner');
+    banner.classList.add('visible');
+    document.body.classList.add('has-banner');
+
+    const tri = document.createElement('div');
+    tri.style.cssText = 'position:fixed;top:0;left:0;z-index:10000;width:56px;height:56px;clip-path:polygon(0 0,100% 0,0 100%);background:#f59e0b;cursor:pointer;';
+    tri.title = 'In Progress';
+    let lbl = null, t = null;
+    tri.addEventListener('click', () => {
+      if (lbl) { lbl.remove(); lbl = null; clearTimeout(t); return; }
+      lbl = Object.assign(document.createElement('div'), { textContent: 'In Progress' });
+      lbl.style.cssText = 'position:fixed;top:6px;left:6px;z-index:10001;background:#f59e0b;color:#fff;font-family:Inter,sans-serif;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;pointer-events:none;';
+      document.body.appendChild(lbl);
+      t = setTimeout(() => { lbl?.remove(); lbl = null; }, 4000);
+    });
+    document.body.appendChild(tri);
+  }
+
+  const raw = sessionStorage.getItem('calc_input');
+  if (!raw) { renderEmpty(); return; }
+
+  try {
+    const data = JSON.parse(raw);
+    renderResult(data);
+  } catch {
+    renderEmpty();
+  }
+})();
+</script>
+
+</body>
+</html>

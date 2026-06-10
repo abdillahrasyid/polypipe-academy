@@ -479,10 +479,7 @@
 <footer class="footer-bar">
   <span class="footer-copy">© 2026 polypipe.id academy</span>
   <div class="footer-logo">
-    <div class="footer-logo-text">
-      <span class="t1">POLYPIPE.id</span>
-      <span class="t2">ACADEMY</span>
-    </div>
+    <img src="image/logo-polypipe-footer.png" alt="Polypipe Academy" height="30" style="display:block;object-fit:contain;" />
   </div>
 </footer>
 
@@ -696,7 +693,9 @@
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || 'Gagal menyimpan data');
       }
-      showToast('Data berhasil disimpan!', 'success');
+      sessionStorage.setItem('calc_input', JSON.stringify(data));
+      location.href = 'calculator-result.html';
+      return;
     } catch (err) {
       showToast(err.message || 'Terjadi kesalahan, coba lagi.', 'error');
     } finally {
