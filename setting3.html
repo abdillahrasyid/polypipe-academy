@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Referensi Setting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body { background: var(--gray-50); display: flex; flex-direction: column; min-height: 100vh; }
+  </style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="ico-arrow-left"     viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></symbol>
+  <symbol id="ico-arrow-right"    viewBox="0 0 20 20"><path d="M4.167 10H15.833M15.833 10l-5-5M15.833 10l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+  <symbol id="ico-arrow-left-btn" viewBox="0 0 20 20"><path d="M15.833 10H4.167M4.167 10l5 5M4.167 10l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+</svg>
+
+<div class="page-header">
+  <button class="btn-back" onclick="location.href='setting2.html'" aria-label="Kembali ke langkah 2">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><use href="#ico-arrow-left"/></svg>
+  </button>
+  <span class="page-title">Referensi Setting</span>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-track">
+    <div class="progress-seg progress-seg--done"></div>
+    <div class="progress-seg progress-seg--done"></div>
+    <div class="progress-seg progress-seg--done"></div>
+    <div class="progress-seg progress-seg--todo"></div>
+    <div class="progress-seg progress-seg--todo"></div>
+  </div>
+</div>
+
+<div class="setting-body">
+  <div class="setting-card">
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="step-badge">03</div>
+      <p class="setting-card-title">Alignment</p>
+      <p class="setting-card-desc">Lorem ipsum dolor sit amet consectetur. Etiam tortor tincidunt in lorem aliquet adipiscing.</p>
+    </div>
+    <div style="width:100%;aspect-ratio:4/3;border-radius:10px;background:linear-gradient(135deg,#e0e8f5,#c8d8f0);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--prime-400)" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+      <span style="font-size:11px;color:var(--gray-400);">Gambar langkah 03</span>
+    </div>
+  </div>
+  <div class="setting-nav">
+    <button class="btn btn--outline btn--sm" onclick="location.href='setting2.html'">
+      <span class="btn-icon"><svg width="16" height="16" fill="none"><use href="#ico-arrow-left-btn" stroke="var(--gray-700)"/></svg></span>Sebelumnya
+    </button>
+    <button class="btn btn--dark btn--sm" onclick="location.href='setting4.html'">
+      Selanjutnya<span class="btn-icon"><svg width="16" height="16" fill="none"><use href="#ico-arrow-right" stroke="#fff"/></svg></span>
+    </button>
+  </div>
+</div>
+
+<div class="footer-bar" style="margin-top:auto;">
+  <span class="footer-copy">© 2026 polypipe.id academy</span>
+  <div class="footer-logo">
+    <div style="width:22px;height:22px;border-radius:5px;background:var(--prime-600);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">P</div>
+    <div class="footer-logo-text"><span class="t1">POLYPIPE.id</span><span class="t2">ACADEMY</span></div>
+  </div>
+</div>
+
+</body>
+</html>

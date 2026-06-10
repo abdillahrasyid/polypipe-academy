@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* override styles.css height:100% lock agar konten bisa scroll alami */
+    html { height: auto; }
+    body {
+      height: auto;
+      background: linear-gradient(180deg, #041630 0%, #020c20 100%);
+      min-height: 100vh;
+      overflow-y: visible;
+    }
+
+    /* ── header ── */
+    .home-header {
+      position: relative;
+      padding: 48px 20px 32px;
+      overflow: hidden;
+    }
+    .home-header-ornament {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+      opacity: 0.3;
+      z-index: 0;
+    }
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 20px;
+    }
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a6fc8, #7aaae8);
+      border: 2px solid rgba(255,255,255,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .brand-logo-home {
+      width: 96px;
+      object-fit: contain;
+    }
+    .user-greeting {
+      font-size: 13px;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
+    }
+    .user-name {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── cards ── */
+    .cards {
+      padding: 0 20px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      border-radius: 22px;
+      padding: 20px 20px 20px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      min-height: 158px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .card:active { transform: scale(.97); }
+
+    .card--calc    { background: linear-gradient(130deg, #2e4fd4 0%, #1a94cc 100%); }
+    .card--setting { background: linear-gradient(130deg, #6010aa 0%, #9822b0 100%); }
+    .card--inspect { background: linear-gradient(130deg, #d83a28 0%, #f0a03c 100%); }
+
+    /* large faded background icon */
+    .card-icon-bg {
+      position: absolute;
+      right: -24px;
+      top: -24px;
+      font-size: 128px;
+      line-height: 1;
+      color: rgba(255,255,255,.13);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* small icon box */
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      background: rgba(255,255,255,.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      position: relative;
+      z-index: 1;
+      font-size: 22px;
+    }
+
+    /* title + arrow row */
+    .card-footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+    .card-title { font-size: 20px; font-weight: 700; color: #fff; line-height: 28px; }
+    .card-sub   { font-size: 12px; color: rgba(255,255,255,.65); margin-top: 3px; }
+
+    .card-arrow {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #fff;
+      font-size: 18px;
+    }
+
+    /* coming soon badge */
+    .coming-badge {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: rgba(0,0,0,.28);
+      color: rgba(255,255,255,.9);
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 4px 10px;
+      letter-spacing: .3px;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── header ── -->
+<div class="home-header">
+  <img src="image/Ornament-header.png" alt="" aria-hidden="true" class="home-header-ornament" />
+
+  <div class="header-top">
+    <div class="avatar">R</div>
+    <img src="image/logo polypipe 2.png" alt="Polypipe Academy" class="brand-logo-home" />
+  </div>
+
+  <div class="user-greeting">Welcome</div>
+  <div class="user-name">M. Ramadhani</div>
+</div>
+
+<!-- ── feature cards ── -->
+<div class="cards">
+
+  <!-- Calculator -->
+  <div class="card card--calc" onclick="alert('Calculator — coming soon!')" role="button" tabindex="0" aria-label="Calculator — Hitung parameter pengelasan">
+    <i class="ph-bold ph-calculator card-icon-bg" aria-hidden="true"></i>
+    <div class="card-icon">
+      <i class="ph ph-calculator" aria-hidden="true"></i>
+    </div>
+    <div class="card-footer">
+      <div>
+        <div class="card-title">Calculator</div>
+        <div class="card-sub">Hitung parameter pengelasan</div>
+      </div>
+      <div class="card-arrow">
+        <i class="ph ph-arrow-right" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Referensi Setting -->
+  <div class="card card--setting" onclick="location.href='setting1.html'" role="button" tabindex="0" aria-label="Referensi Setting — Panduan langkah per langkah">
+    <div class="coming-badge" aria-label="Coming soon">coming soon</div>
+    <i class="ph-bold ph-gear-six card-icon-bg" aria-hidden="true"></i>
+    <div class="card-icon">
+      <i class="ph ph-gear-six" aria-hidden="true"></i>
+    </div>
+    <div class="card-footer">
+      <div>
+        <div class="card-title">Referensi Setting</div>
+        <div class="card-sub">Panduan langkah – langkah</div>
+      </div>
+      <div class="card-arrow">
+        <i class="ph ph-arrow-right" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inspection -->
+  <div class="card card--inspect" style="cursor:default;" aria-label="Inspection — Rekomendasi Pemeriksaan (coming soon)">
+    <div class="coming-badge" aria-label="Coming soon">coming soon</div>
+    <i class="ph-bold ph-crosshair card-icon-bg" aria-hidden="true"></i>
+    <div class="card-icon">
+      <i class="ph ph-crosshair" aria-hidden="true"></i>
+    </div>
+    <div class="card-footer">
+      <div>
+        <div class="card-title">Inspection</div>
+        <div class="card-sub">Rekomendasi Pemeriksaan</div>
+      </div>
+      <div class="card-arrow" style="opacity:.4;">
+        <i class="ph ph-arrow-right" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="home-indicator" style="color:rgba(255,255,255,.3);margin-top:auto;"><span></span></div>
+
+</body>
+</html>

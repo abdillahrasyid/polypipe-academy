@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Referensi Setting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body { background: var(--gray-50); display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="ico-arrow-left" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></symbol>
+</svg>
+
+<!-- page (dimmed behind modal) -->
+<div style="filter:brightness(.5);pointer-events:none;" aria-hidden="true">
+  <div class="page-header">
+    <button class="btn-back" style="opacity:.5;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><use href="#ico-arrow-left"/></svg>
+    </button>
+    <span class="page-title">Referensi Setting</span>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-seg progress-seg--done"></div>
+      <div class="progress-seg progress-seg--done"></div>
+      <div class="progress-seg progress-seg--done"></div>
+      <div class="progress-seg progress-seg--done"></div>
+      <div class="progress-seg progress-seg--todo"></div>
+    </div>
+  </div>
+  <div class="setting-body">
+    <div class="setting-card">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="step-badge">04</div>
+        <p class="setting-card-title">Temperatur → Check Standard</p>
+        <p class="setting-card-desc">Lorem ipsum dolor sit amet consectetur.</p>
+      </div>
+      <div style="width:100%;aspect-ratio:4/3;border-radius:10px;background:linear-gradient(135deg,#e0e8f5,#c8d8f0);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <div class="modal-header">
+      <!-- warning icon -->
+      <div style="width:52px;height:52px;border-radius:50%;background:#fff8ec;border:1.5px solid #fde8b2;display:flex;align-items:center;justify-content:center;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 20h20L12 2z" fill="#F79009"/>
+          <path d="M12 9v5M12 17v.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="modal-title" id="modal-title">Perhatian</p>
+      <p class="modal-text">Apakah alat sudah sesuai dengan<br>suggest temperatur?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--dark btn--full" onclick="location.href='setting5.html'">Ya, Sudah Sesuai</button>
+      <button class="btn-text" onclick="location.href='setting4.html'">Belum Sesuai</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

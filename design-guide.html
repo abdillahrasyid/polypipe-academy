@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy — Design Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design Tokens (sama persis dengan index.html) ── */
+    :root {
+      /* Primary */
+      --prime-400: #3d69aa;
+      --prime-500: #0d4495;
+      --prime-600: #0c3e88;
+      --prime-700: #09306a;
+
+      /* Status */
+      --done-500:    #12b76a;
+      --error-500:   #f04438;
+      --warning-500: #f79009;
+      --blue-500:    #429bf4;
+
+      /* Gray scale */
+      --gray-25:  #fcfcfd;
+      --gray-50:  #f9fafb;
+      --gray-100: #f2f4f7;
+      --gray-200: #eaecf0;
+      --gray-300: #d0d5dd;
+      --gray-400: #98a2b3;
+      --gray-500: #667085;
+      --gray-600: #475467;
+      --gray-700: #344054;
+      --gray-800: #1d2939;
+
+      /* Background dark */
+      --bg-canvas:  #1a1a2e;
+      --bg-deep:    #04152f;
+      --bg-home:    #051d3f;
+
+      /* Feature card gradients */
+      --card-calc:    linear-gradient(115deg, #4361d1 33.665%, #36a8d2 110.43%);
+      --card-setting: linear-gradient(116deg, #5d11a2 34.289%, #941c9d 103.75%);
+      --card-inspect: linear-gradient(112deg, #ff5c46 34.391%, #ffbf88 106.31%);
+    }
+
+    /* ── Base ──────────────────────────────────────── */
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      line-height: 1.5;
+    }
+
+    /* ── Layout ─────────────────────────────────────── */
+    .guide-header {
+      background: linear-gradient(to right, var(--prime-700), var(--prime-500));
+      color: #fff;
+      padding: 48px 40px 40px;
+    }
+    .guide-header-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      opacity: .7;
+      margin-bottom: 8px;
+    }
+    .guide-header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 40px;
+    }
+    .guide-header p {
+      font-size: 14px;
+      opacity: .8;
+      margin-top: 8px;
+    }
+    .guide-nav {
+      background: #fff;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 40px;
+      display: flex;
+      gap: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      overflow-x: auto;
+    }
+    .guide-nav a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-500);
+      text-decoration: none;
+      padding: 14px 16px;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color .15s, border-color .15s;
+    }
+    .guide-nav a:hover { color: var(--prime-500); }
+    .guide-nav a.active { color: var(--prime-500); border-bottom-color: var(--prime-500); }
+
+    .guide-body {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 64px;
+    }
+
+    /* ── Section ────────────────────────────────────── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--prime-500);
+      margin-bottom: 4px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gray-800);
+      margin-bottom: 4px;
+    }
+    .section-desc {
+      font-size: 14px;
+      color: var(--gray-500);
+      margin-bottom: 28px;
+    }
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--gray-200);
+      margin-bottom: 28px;
+    }
+
+    /* ── Color Grid ─────────────────────────────────── */
+    .color-group { margin-bottom: 32px; }
+    .color-group-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 12px;
+    }
+    .color-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .color-chip {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 96px;
+    }
+    .color-chip--wide { width: 120px; }
+    .color-swatch {
+      width: 100%;
+      height: 64px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,.07);
+    }
+    .color-meta { font-size: 11px; color: var(--gray-600); }
+    .color-name { font-weight: 600; font-size: 11px; color: var(--gray-800); }
+    .color-hex  { font-family: monospace; font-size: 10px; color: var(--gray-500); }
+    .color-var  { font-family: monospace; font-size: 10px; color: var(--gray-400); word-break: break-all; }
+
+    .gradient-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .gradient-chip { display: flex; flex-direction: column; gap: 6px; width: 180px; }
+    .gradient-swatch {
+      width: 100%;
+      height: 72px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,.07);
+    }
+    .gradient-name { font-size: 12px; font-weight: 600; color: var(--gray-800); }
+    .gradient-usage { font-size: 11px; color: var(--gray-500); }
+
+    /* ── Typography ─────────────────────────────────── */
+    .type-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .type-table th {
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--gray-100);
+      color: var(--gray-600);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .type-table th:first-child { border-radius: 8px 0 0 0; }
+    .type-table th:last-child  { border-radius: 0 8px 0 0; }
+    .type-table td {
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: middle;
+    }
+    .type-table tr:last-child td { border-bottom: none; }
+    .type-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--gray-100);
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--prime-600);
+    }
+    .type-sample-display { font-size: 30px; font-weight: 400; line-height: 38px; }
+    .type-sample-h1      { font-size: 24px; font-weight: 600; line-height: 32px; }
+    .type-sample-h2      { font-size: 20px; font-weight: 600; line-height: 30px; }
+    .type-sample-h3      { font-size: 18px; font-weight: 600; line-height: 28px; }
+    .type-sample-h4      { font-size: 16px; font-weight: 500; line-height: 24px; }
+    .type-sample-body    { font-size: 14px; font-weight: 400; line-height: 20px; }
+    .type-sample-small   { font-size: 12px; font-weight: 400; line-height: 18px; }
+    .type-sample-xs      { font-size: 11px; font-weight: 500; line-height: 16px; }
+    .type-sample-status  { font-size: 15px; font-weight: 600; letter-spacing: -.3px; }
+
+    /* ── Buttons ────────────────────────────────────── */
+    .btn-showcase {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .btn-showcase-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .btn-showcase-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    /* Button base */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 48px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      cursor: pointer;
+      border: none;
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+      transition: opacity .15s;
+      text-decoration: none;
+    }
+    .btn:active { opacity: .8; }
+    .btn--primary { background: var(--prime-500); color: #fff; }
+    .btn--dark    { background: var(--prime-600); color: #fff; }
+    .btn--outline { background: #fff; color: var(--gray-800); border: 1px solid var(--gray-300); }
+    .btn--ghost   { background: transparent; color: #fff; border: 1px solid #fff; }
+    .btn--full    { width: 100%; }
+    .btn--sm      { width: 156px; }
+
+    .btn-white {
+      background: #fff;
+      color: var(--prime-500);
+      font-weight: 600;
+      font-size: 16px;
+      height: 48px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-outline-white {
+      background: transparent;
+      color: #fff;
+      border: 1.5px solid #fff;
+      font-weight: 600;
+      font-size: 16px;
+      height: 48px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-text {
+      background: transparent;
+      border: none;
+      color: var(--prime-400);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+      cursor: pointer;
+      padding: 12px 16px;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-back {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 5px;
+      background: var(--prime-600);
+      border: none;
+      cursor: pointer;
+    }
+    .btn-icon-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.17);
+      border: 1px solid rgba(255,255,255,.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .dark-bg {
+      background: linear-gradient(to right, var(--prime-700), #0a1e42);
+      padding: 24px;
+      border-radius: 12px;
+    }
+    .dark-bg .btn-showcase { gap: 12px; }
+
+    /* ── Button Spec Table ──────────────────────────── */
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 24px; }
+    .spec-table th {
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--gray-100);
+      color: var(--gray-600);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .spec-table th:first-child { border-radius: 8px 0 0 0; }
+    .spec-table th:last-child  { border-radius: 0 8px 0 0; }
+    .spec-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .spec-table td:first-child { font-weight: 600; color: var(--gray-800); white-space: nowrap; }
+    .spec-table .mono { font-family: monospace; font-size: 11px; color: var(--prime-600); background: var(--gray-100); padding: 2px 5px; border-radius: 3px; white-space: nowrap; }
+    .spec-table .usage { color: var(--gray-500); font-size: 12px; }
+
+    /* ── Usage Notes ────────────────────────────────── */
+    .usage-note {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-left: 3px solid var(--prime-500);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--gray-700);
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+    .usage-note strong { color: var(--prime-600); }
+
+    /* ── Scrollbar hide for nav ─────────────────────── */
+    .guide-nav::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────── -->
+<header class="guide-header">
+  <div class="guide-header-label">Polypipe Academy</div>
+  <h1>Design Guide</h1>
+  <p>Referensi warna, tipografi, dan button — gunakan panduan ini agar setiap halaman baru konsisten.</p>
+</header>
+
+<!-- ── Sticky Nav ─────────────────────────────────── -->
+<nav class="guide-nav">
+  <a href="#colors" class="active">Warna</a>
+  <a href="#typography">Tipografi</a>
+  <a href="#buttons">Button</a>
+</nav>
+
+<!-- ── Body ──────────────────────────────────────── -->
+<main class="guide-body">
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1: WARNA
+  ══════════════════════════════════════════════ -->
+  <section id="colors">
+    <p class="section-label">01 — Colors</p>
+    <h2 class="section-title">Palet Warna</h2>
+    <p class="section-desc">Semua warna didefinisikan sebagai CSS variable di <code>:root</code>. Selalu gunakan variable, jangan hardcode hex.</p>
+    <hr class="section-divider" />
+
+    <!-- Primary -->
+    <div class="color-group">
+      <div class="color-group-title">Primary — Biru Polypipe</div>
+      <div class="color-row">
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--prime-400);"></div>
+          <div class="color-meta">
+            <div class="color-name">prime-400</div>
+            <div class="color-hex">#3d69aa</div>
+            <div class="color-var">--prime-400</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--prime-500);box-shadow:0 0 0 2px var(--prime-500),0 0 0 4px rgba(13,68,149,.2);"></div>
+          <div class="color-meta">
+            <div class="color-name">prime-500 ★</div>
+            <div class="color-hex">#0d4495</div>
+            <div class="color-var">--prime-500</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--prime-600);"></div>
+          <div class="color-meta">
+            <div class="color-name">prime-600</div>
+            <div class="color-hex">#0c3e88</div>
+            <div class="color-var">--prime-600</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--prime-700);"></div>
+          <div class="color-meta">
+            <div class="color-name">prime-700</div>
+            <div class="color-hex">#09306a</div>
+            <div class="color-var">--prime-700</div>
+          </div>
+        </div>
+      </div>
+      <div class="usage-note">
+        ★ <strong>prime-500</strong> adalah warna utama brand. Dipakai untuk button primary, status bar, page header. <strong>prime-600</strong> untuk hover/dark variant button. <strong>prime-700</strong> untuk auth header background.
+      </div>
+    </div>
+
+    <!-- Status Colors -->
+    <div class="color-group">
+      <div class="color-group-title">Status Colors</div>
+      <div class="color-row">
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--done-500);"></div>
+          <div class="color-meta">
+            <div class="color-name">done-500</div>
+            <div class="color-hex">#12b76a</div>
+            <div class="color-var">--done-500</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--error-500);"></div>
+          <div class="color-meta">
+            <div class="color-name">error-500</div>
+            <div class="color-hex">#f04438</div>
+            <div class="color-var">--error-500</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--warning-500);"></div>
+          <div class="color-meta">
+            <div class="color-name">warning-500</div>
+            <div class="color-hex">#f79009</div>
+            <div class="color-var">--warning-500</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--blue-500);"></div>
+          <div class="color-meta">
+            <div class="color-name">blue-500</div>
+            <div class="color-hex">#429bf4</div>
+            <div class="color-var">--blue-500</div>
+          </div>
+        </div>
+      </div>
+      <div class="usage-note">
+        <strong>done-500</strong> untuk progress bar selesai &amp; status sukses. <strong>error-500</strong> untuk tanda required (*) &amp; validasi error. <strong>warning-500</strong> untuk ikon peringatan di modal. <strong>blue-500</strong> untuk link "Lupa kata sandi?" &amp; teks aksi sekunder.
+      </div>
+    </div>
+
+    <!-- Gray Scale -->
+    <div class="color-group">
+      <div class="color-group-title">Gray Scale — Teks &amp; Border</div>
+      <div class="color-row">
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-25);border:1px solid var(--gray-200);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-25</div>
+            <div class="color-hex">#fcfcfd</div>
+            <div class="color-var">--gray-25</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-50);border:1px solid var(--gray-200);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-50</div>
+            <div class="color-hex">#f9fafb</div>
+            <div class="color-var">--gray-50</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-100);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-100</div>
+            <div class="color-hex">#f2f4f7</div>
+            <div class="color-var">--gray-100</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-200);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-200</div>
+            <div class="color-hex">#eaecf0</div>
+            <div class="color-var">--gray-200</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-300);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-300</div>
+            <div class="color-hex">#d0d5dd</div>
+            <div class="color-var">--gray-300</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-400);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-400</div>
+            <div class="color-hex">#98a2b3</div>
+            <div class="color-var">--gray-400</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-500);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-500</div>
+            <div class="color-hex">#667085</div>
+            <div class="color-var">--gray-500</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-600);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-600</div>
+            <div class="color-hex">#475467</div>
+            <div class="color-var">--gray-600</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-700);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-700</div>
+            <div class="color-hex">#344054</div>
+            <div class="color-var">--gray-700</div>
+          </div>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background:var(--gray-800);"></div>
+          <div class="color-meta">
+            <div class="color-name">gray-800</div>
+            <div class="color-hex">#1d2939</div>
+            <div class="color-var">--gray-800</div>
+          </div>
+        </div>
+      </div>
+      <div class="usage-note">
+        <strong>gray-25/50</strong> untuk background layar ringan &amp; footer bar. <strong>gray-100</strong> untuk card setting background. <strong>gray-200/300</strong> untuk border &amp; divider. <strong>gray-400</strong> untuk ikon &amp; placeholder. <strong>gray-500/600</strong> untuk teks body sekunder. <strong>gray-700/800</strong> untuk teks utama pada layar terang.
+      </div>
+    </div>
+
+    <!-- Dark Backgrounds -->
+    <div class="color-group">
+      <div class="color-group-title">Dark Backgrounds — Layar Gelap</div>
+      <div class="color-row">
+        <div class="color-chip color-chip--wide">
+          <div class="color-swatch" style="background:#1a1a2e;"></div>
+          <div class="color-meta">
+            <div class="color-name">bg-canvas</div>
+            <div class="color-hex">#1a1a2e</div>
+            <div class="color-var">--bg-canvas</div>
+          </div>
+        </div>
+        <div class="color-chip color-chip--wide">
+          <div class="color-swatch" style="background:#04152f;"></div>
+          <div class="color-meta">
+            <div class="color-name">bg-deep</div>
+            <div class="color-hex">#04152f</div>
+            <div class="color-var">--bg-deep</div>
+          </div>
+        </div>
+        <div class="color-chip color-chip--wide">
+          <div class="color-swatch" style="background:#051d3f;"></div>
+          <div class="color-meta">
+            <div class="color-name">bg-home</div>
+            <div class="color-hex">#051d3f</div>
+            <div class="color-var">--bg-home</div>
+          </div>
+        </div>
+        <div class="color-chip color-chip--wide">
+          <div class="color-swatch" style="background:linear-gradient(to top,#0d4495 4.577%,#04152f 103.29%);"></div>
+          <div class="color-meta">
+            <div class="color-name">gradient-splash</div>
+            <div class="color-hex">prime-500 → deep</div>
+          </div>
+        </div>
+        <div class="color-chip color-chip--wide">
+          <div class="color-swatch" style="background:linear-gradient(180deg,#051d3f 32%,#020818 100%);"></div>
+          <div class="color-meta">
+            <div class="color-name">gradient-home</div>
+            <div class="color-hex">home → #020818</div>
+          </div>
+        </div>
+      </div>
+      <div class="usage-note">
+        <strong>bg-canvas (#1a1a2e)</strong> untuk background body halaman prototype. <strong>gradient-splash</strong> untuk screen Splash &amp; Welcome. <strong>gradient-home</strong> untuk screen Home.
+      </div>
+    </div>
+
+    <!-- Feature Card Gradients -->
+    <div class="color-group">
+      <div class="color-group-title">Feature Card Gradients</div>
+      <div class="gradient-row">
+        <div class="gradient-chip">
+          <div class="gradient-swatch" style="background:var(--card-calc);"></div>
+          <div class="gradient-name">card-calc</div>
+          <div class="gradient-usage">Biru → Cyan · Fitur Calculator</div>
+        </div>
+        <div class="gradient-chip">
+          <div class="gradient-swatch" style="background:var(--card-setting);"></div>
+          <div class="gradient-name">card-setting</div>
+          <div class="gradient-usage">Ungu → Magenta · Fitur Referensi</div>
+        </div>
+        <div class="gradient-chip">
+          <div class="gradient-swatch" style="background:var(--card-inspect);"></div>
+          <div class="gradient-name">card-inspect</div>
+          <div class="gradient-usage">Merah → Peach · Fitur Inspection</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 2: TIPOGRAFI
+  ══════════════════════════════════════════════ -->
+  <section id="typography">
+    <p class="section-label">02 — Typography</p>
+    <h2 class="section-title">Skala Tipografi</h2>
+    <p class="section-desc">Font tunggal: <strong>Inter</strong> (Google Fonts) — weight 400, 500, 600. Tidak ada ukuran lain di luar tabel ini.</p>
+    <hr class="section-divider" />
+
+    <table class="type-table">
+      <thead>
+        <tr>
+          <th>Contoh</th>
+          <th>Nama</th>
+          <th>Properti CSS</th>
+          <th>Dipakai pada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="type-sample-display">Polypipe Academy</span></td>
+          <td>Display</td>
+          <td>
+            <span class="type-tag">30px</span>
+            <span class="type-tag">400</span>
+            <span class="type-tag">lh 38px</span>
+          </td>
+          <td>Judul halaman Auth (Login, Register)</td>
+        </tr>
+        <tr>
+          <td><span class="type-sample-h1">Referensi Setting</span></td>
+          <td>H1 / Page Title</td>
+          <td>
+            <span class="type-tag">24px</span>
+            <span class="type-tag">600</span>
+            <span class="type-tag">lh 32px</span>
+          </td>
+          <td>Judul halaman dalam page-header, nama user di Home</td>
+        </tr>
+        <tr>
+          <td><span class="type-sample-h2">Calculator</span></td>
+          <td>H2 / Card Title</td>
+          <td>
+            <span class="type-tag">20px</span>
+            <span class="type-tag">600</span>
+            <span class="type-tag">lh 30px</span>
+          </td>
+          <td>Judul feature card di Home</td>
+        </tr>
+        <tr>
+          <td><span class="type-sample-h3">Lupa Kata Sandi</span></td>
+          <td>H3 / Section Title</td>
+          <td>
+            <span class="type-tag">18px</span>
+            <span class="type-tag">600</span>
+            <span class="type-tag">lh 28px</span>
+          </td>
+          <td>Judul header sederhana (screen lupa, password)</td>
+        </tr>
+        <tr>
+          <td><span class="type-sample-h4">Clamping Pipa</span></td>
+          <td>H4 / Label</td>
+          <td>
+            <span class="type-tag">16px</span>
+            <span class="type-tag">500</span>
+            <span class="type-tag">lh 24px</span>
+          </td>
+          <td>Judul setting card, modal title, teks button</td>
+        </tr>
+        <tr>
+          <td><span class="type-sample-body">Masukkan email Anda untuk reset password.</span></td>
+          <td>Body</td>
+          <td>
+            <span class="type-tag">14px</span>
+            <span class="type-tag">400</span>
+            <span class="type-tag">lh 20px</span>
+          </td>
+          <td>Deskripsi, sub-header auth, label input, teks modal</td>
+        </tr>
+        <tr>
+          <td><span class="type-sample-small">Panduan pengelasan pipa HDPE standar internasional</span></td>
+          <td>Small</td>
+          <td>
+            <span class="type-tag">12px</span>
+            <span class="type-tag">400</span>
+            <span class="type-tag">lh 18px</span>
+          </td>
+          <td>Sub-title card, greeting user, kontak welcome, coming badge</td>
+        </tr>
+        <tr>
+          <td><span class="type-sample-xs">Splash · Login · Register</span></td>
+          <td>XS / Nav</td>
+          <td>
+            <span class="type-tag">11px</span>
+            <span class="type-tag">500</span>
+            <span class="type-tag">lh 16px</span>
+          </td>
+          <td>Label navigasi prototype (breadcrumb)</td>
+        </tr>
+        <tr>
+          <td><span class="type-sample-status">9:41</span></td>
+          <td>Status Bar Time</td>
+          <td>
+            <span class="type-tag">15px</span>
+            <span class="type-tag">600</span>
+            <span class="type-tag">ls -0.3px</span>
+          </td>
+          <td>Waktu di status bar atas layar</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="usage-note" style="margin-top:24px;">
+      Hanya tiga font-weight yang di-load: <strong>400</strong> (regular), <strong>500</strong> (medium), <strong>600</strong> (semibold). Jangan tambah weight lain agar bundle font tetap kecil. Tidak ada italic.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 3: BUTTONS
+  ══════════════════════════════════════════════ -->
+  <section id="buttons">
+    <p class="section-label">03 — Buttons</p>
+    <h2 class="section-title">Varian Button</h2>
+    <p class="section-desc">Semua button menggunakan class <code>.btn</code> sebagai base. Tambahkan modifier untuk variant dan ukuran.</p>
+    <hr class="section-divider" />
+
+    <!-- Light BG buttons -->
+    <div style="margin-bottom:8px;font-size:13px;font-weight:600;color:var(--gray-600);">Layar terang (background putih / abu)</div>
+    <div style="background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:24px;">
+      <div class="btn-showcase">
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label">Primary</span>
+          <button class="btn btn--primary">Masuk</button>
+        </div>
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label">Dark</span>
+          <button class="btn btn--dark">Selanjutnya →</button>
+        </div>
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label">Outline</span>
+          <button class="btn btn--outline">← Sebelumnya</button>
+        </div>
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label">Text Link</span>
+          <button class="btn-text">Belum Sesuai</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dark BG buttons -->
+    <div style="margin-top:16px;margin-bottom:8px;font-size:13px;font-weight:600;color:var(--gray-600);">Layar gelap (background biru / gradient)</div>
+    <div class="dark-bg">
+      <div class="btn-showcase">
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label" style="color:rgba(255,255,255,.5);">White</span>
+          <button class="btn-white" style="padding:0 24px;">Masuk</button>
+        </div>
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label" style="color:rgba(255,255,255,.5);">Outline White</span>
+          <button class="btn-outline-white" style="padding:0 24px;">Daftar Akun</button>
+        </div>
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label" style="color:rgba(255,255,255,.5);">Ghost</span>
+          <button class="btn btn--ghost">Lanjut</button>
+        </div>
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label" style="color:rgba(255,255,255,.5);">Back</span>
+          <button class="btn-back">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+          </button>
+        </div>
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label" style="color:rgba(255,255,255,.5);">Arrow Circle</span>
+          <div class="btn-icon-circle">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.167 10H15.833M15.833 10l-5-5M15.833 10l-5 5" stroke="#fff" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spec Table -->
+    <table class="spec-table">
+      <thead>
+        <tr>
+          <th>Variant</th>
+          <th>Class</th>
+          <th>Background</th>
+          <th>Teks</th>
+          <th>Kapan dipakai</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Primary</td>
+          <td><code class="mono">.btn.btn--primary</code></td>
+          <td><code class="mono">--prime-500</code></td>
+          <td>#fff</td>
+          <td class="usage">Aksi utama di layar terang — Masuk, Daftar, Kirim, Simpan</td>
+        </tr>
+        <tr>
+          <td>Dark</td>
+          <td><code class="mono">.btn.btn--dark</code></td>
+          <td><code class="mono">--prime-600</code></td>
+          <td>#fff</td>
+          <td class="usage">Navigasi maju di setting/wizard — Selanjutnya, Ya Sudah Sesuai</td>
+        </tr>
+        <tr>
+          <td>Outline</td>
+          <td><code class="mono">.btn.btn--outline</code></td>
+          <td>#fff</td>
+          <td><code class="mono">--gray-800</code></td>
+          <td class="usage">Aksi sekunder di layar terang — Sebelumnya, Buat Akun Baru</td>
+        </tr>
+        <tr>
+          <td>Ghost</td>
+          <td><code class="mono">.btn.btn--ghost</code></td>
+          <td>transparent</td>
+          <td>#fff + border #fff</td>
+          <td class="usage">Aksi sekunder di layar gelap/gradient</td>
+        </tr>
+        <tr>
+          <td>White</td>
+          <td><code class="mono">.btn-white</code></td>
+          <td>#fff</td>
+          <td><code class="mono">--prime-500</code></td>
+          <td class="usage">CTA utama di screen Welcome (bg gelap)</td>
+        </tr>
+        <tr>
+          <td>Outline White</td>
+          <td><code class="mono">.btn-outline-white</code></td>
+          <td>transparent</td>
+          <td>#fff + border #fff 1.5px</td>
+          <td class="usage">CTA sekunder di screen Welcome</td>
+        </tr>
+        <tr>
+          <td>Text Link</td>
+          <td><code class="mono">.btn-text</code></td>
+          <td>transparent</td>
+          <td><code class="mono">--prime-400</code></td>
+          <td class="usage">Aksi tersier — Belum Sesuai, link modal</td>
+        </tr>
+        <tr>
+          <td>Back</td>
+          <td><code class="mono">.btn-back</code></td>
+          <td><code class="mono">--prime-600</code></td>
+          <td>ikon #fff</td>
+          <td class="usage">Tombol kembali di page header auth (40×40px)</td>
+        </tr>
+        <tr>
+          <td>Arrow Circle</td>
+          <td><code class="mono">.feature-card-btn</code></td>
+          <td>rgba(255,255,255,.17)</td>
+          <td>ikon #fff</td>
+          <td class="usage">Tombol panah di feature card Home (40×40px circle)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Size modifiers -->
+    <div style="margin-top:28px;">
+      <div style="font-size:14px;font-weight:600;color:var(--gray-700);margin-bottom:12px;">Size Modifier</div>
+      <div style="background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:24px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label">Full width (.btn--full)</span>
+          <button class="btn btn--primary btn--full" style="max-width:300px;">Kirim Tautan Reset Password</button>
+        </div>
+        <div class="btn-showcase-group">
+          <span class="btn-showcase-label">Small / 156px (.btn--sm)</span>
+          <button class="btn btn--dark btn--sm">Selanjutnya</button>
+          <button class="btn btn--outline btn--sm">Sebelumnya</button>
+        </div>
+      </div>
+      <div class="usage-note" style="margin-top:12px;">
+        <strong>.btn--full</strong> untuk form action tunggal (Login, Register, Reset). <strong>.btn--sm</strong> (156px) untuk pasangan Sebelumnya / Selanjutnya yang diletakkan berdampingan.
+      </div>
+    </div>
+
+    <!-- Base anatomy -->
+    <div style="margin-top:28px;">
+      <div style="font-size:14px;font-weight:600;color:var(--gray-700);margin-bottom:12px;">Anatomi Base Button</div>
+      <div style="background:var(--gray-100);border-radius:8px;padding:16px 20px;font-family:monospace;font-size:12px;color:var(--gray-700);line-height:1.8;">
+        height: 48px &nbsp;·&nbsp; padding: 12px 16px &nbsp;·&nbsp; border-radius: 8px<br>
+        font-size: 16px &nbsp;·&nbsp; font-weight: 600 &nbsp;·&nbsp; line-height: 24px<br>
+        transition: opacity .15s &nbsp;·&nbsp; :active → opacity .8
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+  /* Update active nav link on scroll */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('.guide-nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`.guide-nav a[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

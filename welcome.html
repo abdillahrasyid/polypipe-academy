@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Selamat Datang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body {
+      background: linear-gradient(160deg, #04152f 0%, #0a2a6e 55%, #0d4495 100%);
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      justify-content: space-between;
+    }
+
+    .bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: url('image/background-welcome.png') center center / cover no-repeat;
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* top section */
+    .top-section {
+      padding: 64px 32px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-logo {
+      width: 160px;
+      margin-bottom: 20px;
+    }
+
+    /* middle tagline */
+    .mid-section {
+      padding: 0 32px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .tagline {
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 30px;
+    }
+    .tagline em {
+      font-style: normal;
+      color: rgba(255,255,255,.55);
+      font-weight: 400;
+    }
+    .sub-tagline {
+      font-size: 14px;
+      color: rgba(255,255,255,.5);
+      line-height: 22px;
+      margin-top: 10px;
+    }
+
+    /* bottom section */
+    .bottom-section {
+      padding: 0 24px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contacts {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: rgba(255,255,255,.4);
+      text-decoration: none;
+    }
+    .contact-item svg {
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-overlay" aria-hidden="true"></div>
+
+<!-- top: brand -->
+<div class="top-section">
+  <img src="image/Logo Polypipe white.png" alt="Polypipe Academy" class="brand-logo" />
+</div>
+
+<!-- middle: tagline -->
+<div class="mid-section">
+  <h1 class="tagline">Panduan pengelasan pipa HDPE <em>standar internasional</em></h1>
+  <p class="sub-tagline">Referensi teknis untuk profesional industri pipa — kapan saja, di mana saja.</p>
+</div>
+
+<!-- bottom: CTAs -->
+<div class="bottom-section">
+  <button class="btn-white" onclick="location.href='login.html'">Masuk</button>
+  <button class="btn-outline-white" onclick="location.href='register.html'">Daftar Akun Baru</button>
+  <div class="contacts">
+    <a href="mailto:admin@polypipe.id" class="contact-item">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      admin@polypipe.id
+    </a>
+    <a href="https://instagram.com/polypipe.id" target="_blank" rel="noopener noreferrer" class="contact-item">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+      Polypipe.id Academy
+    </a>
+  </div>
+</div>
+
+</body>
+</html>
