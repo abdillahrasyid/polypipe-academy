@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Feedback Pengguna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <meta name="use-mock" content="true" />
+  <meta name="api-base-url" content="/api/v1" />
+  <script>
+    window.USE_MOCK    = document.querySelector('meta[name="use-mock"]')?.content === 'true';
+    window.API_BASE_URL = document.querySelector('meta[name="api-base-url"]')?.content ?? '/api/v1';
+  </script>
+
+  <style>
+    body { background: #fff; overflow-y: auto; }
+
+    /* ── Proto banner ── */
+    .proto-banner {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #1d4ed8; color: #fff;
+      font-size: 11px; font-weight: 500; text-align: center;
+      padding: 4px 12px; z-index: 9999;
+      font-family: 'Inter', sans-serif; display: none;
+    }
+    .proto-banner.visible { display: block; }
+    body.has-banner .fb-header { padding-top: 65px; }
+
+    /* ── Header ── */
+    .fb-header {
+      background: var(--prime-500);
+      padding: 52px 24px 24px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .fb-header::after {
+      content: ''; position: absolute; inset: 0;
+      background: url('image/Ornament-header.png') no-repeat right top;
+      background-size: cover; opacity: 0.25; pointer-events: none;
+    }
+    .fb-header .btn-back {
+      background: transparent; color: #fff;
+      position: relative; z-index: 1;
+    }
+    .fb-header .btn-back:hover,
+    .fb-header .btn-back:active { background: transparent; }
+    .fb-header-title {
+      font-size: 18px; font-weight: 600; color: #fff;
+      line-height: 28px; position: relative; z-index: 1;
+    }
+
+    /* ── Body ── */
+    .fb-body {
+      padding: 24px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+
+    /* ── Field group ── */
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-label {
+      font-size: 14px; font-weight: 400;
+      color: var(--gray-800); line-height: 20px;
+      list-style: decimal; padding-left: 20px;
+    }
+    .field-label li { display: list-item; }
+
+    /* ── Select wrapper ── */
+    .select-wrap {
+      position: relative;
+      display: flex; align-items: center;
+    }
+    .feedback-select {
+      width: 100%;
+      padding: 12px 40px 12px 14px;
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 16px; font-weight: 400;
+      color: var(--gray-800);
+      font-family: 'Inter', sans-serif;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      transition: border-color .15s;
+      line-height: 24px;
+    }
+    .feedback-select:focus {
+      outline: none;
+      border-color: var(--prime-500);
+    }
+    .feedback-select.placeholder-shown,
+    .feedback-select:invalid {
+      color: var(--gray-400);
+    }
+    .feedback-select option { color: var(--gray-800); }
+    .feedback-select option[value=""] { color: var(--gray-400); }
+    .select-chevron {
+      position: absolute; right: 14px;
+      width: 20px; height: 20px;
+      pointer-events: none; flex-shrink: 0;
+      color: var(--gray-400);
+    }
+    .field-error {
+      font-size: 12px; color: var(--error-500);
+      display: none; margin-top: 2px;
+    }
+    .field-error.visible { display: block; }
+    .feedback-select[aria-invalid="true"] { border-color: var(--error-500); }
+
+    /* ── Selanjutnya button (outlined + icon) ── */
+    .btn-next-feedback {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+      height: 48px; padding: 12px 16px;
+      border: 1px solid var(--gray-300); border-radius: 8px;
+      background: #fff;
+      font-size: 16px; font-weight: 600;
+      color: var(--gray-800); font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      align-self: flex-end;
+    }
+    .btn-next-feedback:hover  { background: var(--gray-50); }
+    .btn-next-feedback:active { background: var(--gray-100); }
+    .btn-next-feedback:disabled {
+      opacity: .5; cursor: not-allowed;
+    }
+
+    /* ── Shake animation for validation ── */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-4px); }
+      40%      { transform: translateX(4px); }
+      60%      { transform: translateX(-3px); }
+      80%      { transform: translateX(3px); }
+    }
+    .shake { animation: shake .3s ease; }
+  </style>
+</head>
+<body>
+
+<div class="proto-banner" id="proto-banner" aria-live="polite">🧪 PROTOTYPE — Mock active</div>
+
+<header class="fb-header">
+  <button class="btn-back" onclick="history.back()" aria-label="Kembali">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="#fff"/>
+    </svg>
+  </button>
+  <h1 class="fb-header-title">Feedback Pengguna</h1>
+</header>
+
+<main class="fb-body" id="fb-body">
+  <!-- Q1 -->
+  <div class="field-group">
+    <ol class="field-label" start="1">
+      <li>Bagaimana pengalaman Anda menggunakan aplikasi ini?</li>
+    </ol>
+    <div class="select-wrap">
+      <select class="feedback-select" id="q1" name="q1" required
+              aria-required="true" aria-describedby="q1-error">
+        <option value="" disabled selected>Pilih salah satu</option>
+        <option value="sangat_baik">Sangat Baik</option>
+        <option value="baik">Baik</option>
+        <option value="cukup">Cukup</option>
+        <option value="kurang">Kurang</option>
+        <option value="sangat_kurang">Sangat Kurang</option>
+      </select>
+      <svg class="select-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="field-error" id="q1-error" role="alert"></span>
+  </div>
+
+  <!-- Q2 -->
+  <div class="field-group">
+    <ol class="field-label" start="2">
+      <li>Apakah tampilan aplikasi mudah dipahami dan digunakan?</li>
+    </ol>
+    <div class="select-wrap">
+      <select class="feedback-select" id="q2" name="q2" required
+              aria-required="true" aria-describedby="q2-error">
+        <option value="" disabled selected>Pilih salah satu</option>
+        <option value="sangat_baik">Sangat Baik</option>
+        <option value="baik">Baik</option>
+        <option value="cukup">Cukup</option>
+        <option value="kurang">Kurang</option>
+        <option value="sangat_kurang">Sangat Kurang</option>
+      </select>
+      <svg class="select-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="field-error" id="q2-error" role="alert"></span>
+  </div>
+
+  <!-- Q3 -->
+  <div class="field-group">
+    <ol class="field-label" start="3">
+      <li>Apakah hasil perhitungan sesuai dengan kebutuhan/ekspektasi?</li>
+    </ol>
+    <div class="select-wrap">
+      <select class="feedback-select" id="q3" name="q3" required
+              aria-required="true" aria-describedby="q3-error">
+        <option value="" disabled selected>Pilih salah satu</option>
+        <option value="sangat_baik">Sangat Baik</option>
+        <option value="baik">Baik</option>
+        <option value="cukup">Cukup</option>
+        <option value="kurang">Kurang</option>
+        <option value="sangat_kurang">Sangat Kurang</option>
+      </select>
+      <svg class="select-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="field-error" id="q3-error" role="alert"></span>
+  </div>
+
+  <!-- Q4 -->
+  <div class="field-group">
+    <ol class="field-label" start="4">
+      <li>Bagaimana performa aplikasi saat digunakan (termasuk offline)?</li>
+    </ol>
+    <div class="select-wrap">
+      <select class="feedback-select" id="q4" name="q4" required
+              aria-required="true" aria-describedby="q4-error">
+        <option value="" disabled selected>Pilih salah satu</option>
+        <option value="sangat_baik">Sangat Baik</option>
+        <option value="baik">Baik</option>
+        <option value="cukup">Cukup</option>
+        <option value="kurang">Kurang</option>
+        <option value="sangat_kurang">Sangat Kurang</option>
+      </select>
+      <svg class="select-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="field-error" id="q4-error" role="alert"></span>
+  </div>
+
+  <!-- Q5 -->
+  <div class="field-group">
+    <ol class="field-label" start="5">
+      <li>Apakah aplikasi tetap mudah digunakan saat tanpa internet?</li>
+    </ol>
+    <div class="select-wrap">
+      <select class="feedback-select" id="q5" name="q5" required
+              aria-required="true" aria-describedby="q5-error">
+        <option value="" disabled selected>Pilih salah satu</option>
+        <option value="sangat_baik">Sangat Baik</option>
+        <option value="baik">Baik</option>
+        <option value="cukup">Cukup</option>
+        <option value="kurang">Kurang</option>
+        <option value="sangat_kurang">Sangat Kurang</option>
+      </select>
+      <svg class="select-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="field-error" id="q5-error" role="alert"></span>
+  </div>
+
+  <!-- Navigation -->
+  <button class="btn-next-feedback" id="btn-next" type="button" aria-label="Lanjut ke halaman berikutnya">
+    Selanjutnya
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M4.167 10H15.833M15.833 10l-5-5M15.833 10l-5 5"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</main>
+
+<script>
+  const FIELDS = ['q1','q2','q3','q4','q5'];
+
+  function initProtoBanner() {
+    if (!window.USE_MOCK) return;
+    const banner = document.getElementById('proto-banner');
+    if (banner) { banner.classList.add('visible'); document.body.classList.add('has-banner'); }
+    const tri = document.createElement('div');
+    tri.style.cssText = 'position:fixed;top:0;left:0;z-index:10000;width:56px;height:56px;clip-path:polygon(0 0,100% 0,0 100%);background:#f59e0b;cursor:pointer;';
+    tri.title = 'In Progress';
+    let lbl = null, t = null;
+    tri.addEventListener('click', () => {
+      if (lbl) { lbl.remove(); lbl = null; clearTimeout(t); return; }
+      lbl = Object.assign(document.createElement('div'), { textContent: 'In Progress' });
+      lbl.style.cssText = 'position:fixed;top:6px;left:6px;z-index:10001;background:#f59e0b;color:#fff;font-family:Inter,sans-serif;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;pointer-events:none;';
+      document.body.appendChild(lbl);
+      t = setTimeout(() => { lbl?.remove(); lbl = null; }, 4000);
+    });
+    document.body.appendChild(tri);
+  }
+
+  /* Restore saved values from sessionStorage on back-navigation */
+  function restoreValues() {
+    const saved = JSON.parse(sessionStorage.getItem('feedback_p1') || '{}');
+    FIELDS.forEach(id => {
+      if (saved[id]) {
+        const el = document.getElementById(id);
+        if (el) el.value = saved[id];
+      }
+    });
+  }
+
+  function showError(id, msg) {
+    const sel = document.getElementById(id);
+    const err = document.getElementById(id + '-error');
+    if (!sel || !err) return;
+    sel.setAttribute('aria-invalid', 'true');
+    err.textContent = msg;
+    err.classList.add('visible');
+  }
+
+  function clearError(id) {
+    const sel = document.getElementById(id);
+    const err = document.getElementById(id + '-error');
+    if (!sel || !err) return;
+    sel.removeAttribute('aria-invalid');
+    err.textContent = '';
+    err.classList.remove('visible');
+  }
+
+  /* Inline validation on change */
+  FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', () => {
+      if (el.value) clearError(id);
+    });
+  });
+
+  document.getElementById('btn-next').addEventListener('click', () => {
+    let hasError = false;
+
+    FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el || !el.value) {
+        showError(id, 'Pilih salah satu jawaban');
+        hasError = true;
+      } else {
+        clearError(id);
+      }
+    });
+
+    if (hasError) {
+      /* Shake first invalid field */
+      const firstInvalid = FIELDS.find(id => !document.getElementById(id)?.value);
+      const wrap = document.getElementById(firstInvalid)?.closest('.field-group');
+      if (wrap) {
+        wrap.classList.remove('shake');
+        void wrap.offsetWidth; /* reflow to restart animation */
+        wrap.classList.add('shake');
+        wrap.addEventListener('animationend', () => wrap.classList.remove('shake'), { once: true });
+      }
+      return;
+    }
+
+    /* Save answers to sessionStorage before navigating */
+    const answers = {};
+    FIELDS.forEach(id => { answers[id] = document.getElementById(id).value; });
+    sessionStorage.setItem('feedback_p1', JSON.stringify(answers));
+
+    window.location.href = 'feedback-2.html';
+  });
+
+  initProtoBanner();
+  restoreValues();
+</script>
+
+</body>
+</html>

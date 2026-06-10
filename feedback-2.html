@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Feedback Pengguna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <meta name="use-mock" content="true" />
+  <meta name="api-base-url" content="/api/v1" />
+  <script>
+    window.USE_MOCK    = document.querySelector('meta[name="use-mock"]')?.content === 'true';
+    window.API_BASE_URL = document.querySelector('meta[name="api-base-url"]')?.content ?? '/api/v1';
+  </script>
+
+  <style>
+    body { background: #fff; overflow-y: auto; }
+
+    /* ── Proto banner ── */
+    .proto-banner {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #1d4ed8; color: #fff;
+      font-size: 11px; font-weight: 500; text-align: center;
+      padding: 4px 12px; z-index: 9999;
+      font-family: 'Inter', sans-serif; display: none;
+    }
+    .proto-banner.visible { display: block; }
+    body.has-banner .fb-header { padding-top: 65px; }
+
+    /* ── Header ── */
+    .fb-header {
+      background: var(--prime-500);
+      padding: 52px 24px 24px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .fb-header::after {
+      content: ''; position: absolute; inset: 0;
+      background: url('image/Ornament-header.png') no-repeat right top;
+      background-size: cover; opacity: 0.25; pointer-events: none;
+    }
+    .fb-header .btn-back {
+      background: transparent; color: #fff;
+      position: relative; z-index: 1;
+    }
+    .fb-header .btn-back:hover,
+    .fb-header .btn-back:active { background: transparent; }
+    .fb-header-title {
+      font-size: 18px; font-weight: 600; color: #fff;
+      line-height: 28px; position: relative; z-index: 1;
+    }
+
+    /* ── Body ── */
+    .fb-body {
+      padding: 24px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+
+    /* ── Field group ── */
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-label {
+      font-size: 14px; font-weight: 400;
+      color: var(--gray-800); line-height: 20px;
+      list-style: decimal; padding-left: 20px;
+    }
+    .field-label li { display: list-item; }
+
+    /* ── Textarea ── */
+    .feedback-textarea {
+      width: 100%; min-height: 96px;
+      padding: 12px 14px;
+      border: 1px solid var(--gray-300); border-radius: 8px;
+      background: #fff;
+      font-size: 16px; font-weight: 400;
+      color: var(--gray-800);
+      font-family: 'Inter', sans-serif;
+      resize: vertical;
+      transition: border-color .15s;
+      line-height: 24px;
+    }
+    .feedback-textarea::placeholder { color: var(--gray-400); }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--prime-500);
+    }
+    .feedback-textarea[aria-invalid="true"] { border-color: var(--error-500); }
+    .char-count {
+      font-size: 11px; color: var(--gray-400);
+      text-align: right; margin-top: 2px;
+    }
+    .char-count.over { color: var(--error-500); }
+    .field-error {
+      font-size: 12px; color: var(--error-500);
+      display: none; margin-top: 2px;
+    }
+    .field-error.visible { display: block; }
+
+    /* ── Submit button ── */
+    .btn-submit-feedback {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 48px;
+      background: var(--prime-500); border: none; border-radius: 8px;
+      font-size: 16px; font-weight: 600; color: #fff;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      gap: 8px;
+      transition: background .15s, opacity .15s;
+    }
+    .btn-submit-feedback:hover  { background: var(--prime-600); }
+    .btn-submit-feedback:active { background: var(--prime-700); }
+    .btn-submit-feedback:disabled {
+      opacity: .6; cursor: not-allowed;
+    }
+    .btn-submit-feedback .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none; flex-shrink: 0;
+    }
+    .btn-submit-feedback.loading .spinner { display: block; }
+    .btn-submit-feedback.loading .btn-label { opacity: .8; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Promo banner ── */
+    .promo-banner {
+      background: #bbe0ff;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      min-height: 148px;
+      display: flex; align-items: stretch;
+    }
+    .promo-banner-content {
+      position: relative; z-index: 2;
+      padding: 20px 18px;
+      display: flex; flex-direction: column; gap: 6px;
+      flex: 0 0 auto; width: 60%;
+    }
+    .promo-banner-text {
+      font-size: 12.6px; color: #fff; line-height: 1.5;
+    }
+    .promo-banner-text strong { font-weight: 600; }
+    .promo-banner-chips {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;
+    }
+    .promo-chip {
+      background: #fff;
+      border-radius: 99px;
+      padding: 3px 8px;
+      display: flex; align-items: center; gap: 4px;
+      font-size: 8px; font-weight: 400; color: #000;
+      white-space: nowrap;
+    }
+    .promo-chip svg { width: 7px; height: 7px; flex-shrink: 0; }
+    .promo-banner-tagline {
+      font-size: 8px; color: #fff; line-height: 1.4;
+      margin-top: 4px;
+    }
+    .promo-banner-img {
+      position: absolute; right: 0; top: -20px;
+      width: 50%; height: calc(100% + 40px);
+      object-fit: cover;
+      z-index: 1;
+    }
+    /* Gradient overlay so text stays readable */
+    .promo-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, #bbe0ff 45%, transparent 75%);
+      z-index: 1; pointer-events: none;
+    }
+    /* Fallback when image not available */
+    .promo-banner-img-placeholder {
+      position: absolute; right: 0; top: 0;
+      width: 50%; height: 100%;
+      background: linear-gradient(135deg, #5baee4 0%, #2178b5 100%);
+      z-index: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .promo-banner-img-placeholder svg {
+      width: 56px; height: 56px; opacity: .35;
+    }
+
+    /* ── Success modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 9998;
+      background: rgba(0,0,0,.45);
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 16px;
+      padding: 32px 24px; width: 100%; max-width: 320px;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      text-align: center;
+      animation: popIn .25s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(.9); opacity: 0; }
+      to   { transform: scale(1);  opacity: 1; }
+    }
+    .modal-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: linear-gradient(135deg, #d1fadf, #a6f4c5);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-title { font-size: 20px; font-weight: 600; color: var(--gray-800); }
+    .modal-desc  { font-size: 14px; color: var(--gray-500); line-height: 22px; }
+
+    /* ── Toast ── */
+    .toast-wrap {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      z-index: 9997; pointer-events: none;
+      display: flex; flex-direction: column; gap: 8px; align-items: center;
+    }
+    .toast {
+      background: var(--gray-800); color: #fff;
+      font-size: 13px; font-weight: 500;
+      padding: 10px 18px; border-radius: 8px;
+      white-space: nowrap; opacity: 0;
+      animation: fadeToast .3s ease forwards;
+    }
+    .toast.error { background: var(--error-500); }
+    @keyframes fadeToast {
+      0%   { opacity: 0; transform: translateY(8px); }
+      15%  { opacity: 1; transform: translateY(0); }
+      85%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-4px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="proto-banner" id="proto-banner" aria-live="polite">🧪 PROTOTYPE — Mock active</div>
+
+<header class="fb-header">
+  <button class="btn-back" onclick="history.back()" aria-label="Kembali ke halaman sebelumnya">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="#fff"/>
+    </svg>
+  </button>
+  <h1 class="fb-header-title">Feedback Pengguna</h1>
+</header>
+
+<main class="fb-body">
+
+  <!-- Q6 -->
+  <div class="field-group">
+    <ol class="field-label" start="6">
+      <li>Apakah anda menemukan kendala/ error/ bug, jelaskan !</li>
+    </ol>
+    <textarea class="feedback-textarea" id="q6" name="q6" maxlength="1000"
+              placeholder="Ceritakan kendala yang Anda temukan..."
+              aria-describedby="q6-error q6-count"
+              rows="4"></textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span class="field-error" id="q6-error" role="alert"></span>
+      <span class="char-count" id="q6-count" aria-live="polite">0/1000</span>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="field-group">
+    <ol class="field-label" start="7">
+      <li>Berikan saran atau masukan</li>
+    </ol>
+    <textarea class="feedback-textarea" id="q7" name="q7" maxlength="1000"
+              placeholder="Saran atau masukan Anda..."
+              aria-describedby="q7-error q7-count"
+              rows="4"></textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span class="field-error" id="q7-error" role="alert"></span>
+      <span class="char-count" id="q7-count" aria-live="polite">0/1000</span>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="field-group">
+    <ol class="field-label" start="8">
+      <li>Fitur apa yang Anda harapkan ke depannya?</li>
+    </ol>
+    <textarea class="feedback-textarea" id="q8" name="q8" maxlength="1000"
+              placeholder="Fitur yang Anda inginkan..."
+              aria-describedby="q8-error q8-count"
+              rows="4"></textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span class="field-error" id="q8-error" role="alert"></span>
+      <span class="char-count" id="q8-count" aria-live="polite">0/1000</span>
+    </div>
+  </div>
+
+  <!-- Submit button -->
+  <button class="btn-submit-feedback" id="btn-submit" type="button" aria-busy="false">
+    <span class="spinner" aria-hidden="true"></span>
+    <span class="btn-label">Sumbit</span>
+  </button>
+
+  <!-- Promo banner -->
+  <div class="promo-banner" role="complementary" aria-label="Polypipe Academy">
+    <div class="promo-banner-img-placeholder" aria-hidden="true">
+      <!-- Placeholder illustration (image would be fetched from CDN in production) -->
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="24" stroke="#fff" stroke-width="2"/>
+        <rect x="20" y="28" width="24" height="8" rx="4" fill="#fff" opacity=".6"/>
+        <circle cx="32" cy="20" r="6" fill="#fff" opacity=".6"/>
+      </svg>
+    </div>
+    <div class="promo-banner-content">
+      <p class="promo-banner-text">
+        Tingkatkan skill Anda dalam teknik butt fusion bersama
+        <strong>Polypipe Academy !</strong>
+      </p>
+      <div class="promo-banner-chips">
+        <div class="promo-chip">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" stroke-width="2"/>
+            <path d="M2 8l10 7 10-7" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          admin@polypipe.id
+        </div>
+        <div class="promo-chip">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+          </svg>
+          Polypipe.id Academy
+        </div>
+      </div>
+      <p class="promo-banner-tagline">Dapatkan materi, praktik langsung, dan sertifikasi!</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- Success modal -->
+<div class="modal-overlay" id="modal-success" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <div class="modal-icon" aria-hidden="true">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+        <path d="M5 13l4 4L19 7" stroke="#12b76a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 class="modal-title" id="modal-title">Terima Kasih!</h2>
+    <p class="modal-desc">Feedback Anda telah berhasil dikirim. Masukan Anda sangat berarti untuk pengembangan Polypipe Academy.</p>
+    <button class="btn btn--primary btn--full" onclick="window.location.href='home.html'">
+      Kembali ke Beranda
+    </button>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+
+<script>
+  const TEXT_FIELDS = ['q6', 'q7', 'q8'];
+  const MAX_CHARS   = 1000;
+
+  function initProtoBanner() {
+    if (!window.USE_MOCK) return;
+    const banner = document.getElementById('proto-banner');
+    if (banner) { banner.classList.add('visible'); document.body.classList.add('has-banner'); }
+    const tri = document.createElement('div');
+    tri.style.cssText = 'position:fixed;top:0;left:0;z-index:10000;width:56px;height:56px;clip-path:polygon(0 0,100% 0,0 100%);background:#f59e0b;cursor:pointer;';
+    tri.title = 'In Progress';
+    let lbl = null, t = null;
+    tri.addEventListener('click', () => {
+      if (lbl) { lbl.remove(); lbl = null; clearTimeout(t); return; }
+      lbl = Object.assign(document.createElement('div'), { textContent: 'In Progress' });
+      lbl.style.cssText = 'position:fixed;top:6px;left:6px;z-index:10001;background:#f59e0b;color:#fff;font-family:Inter,sans-serif;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;pointer-events:none;';
+      document.body.appendChild(lbl);
+      t = setTimeout(() => { lbl?.remove(); lbl = null; }, 4000);
+    });
+    document.body.appendChild(tri);
+  }
+
+  /* Check for page-1 answers — redirect if missing */
+  function checkPage1Data() {
+    const p1 = sessionStorage.getItem('feedback_p1');
+    if (!p1) {
+      window.location.replace('feedback-1.html');
+    }
+  }
+
+  /* Char counter for textareas */
+  TEXT_FIELDS.forEach(id => {
+    const ta = document.getElementById(id);
+    const counter = document.getElementById(id + '-count');
+    if (!ta || !counter) return;
+    ta.addEventListener('input', () => {
+      const len = ta.value.length;
+      counter.textContent = `${len}/${MAX_CHARS}`;
+      counter.classList.toggle('over', len >= MAX_CHARS);
+    });
+  });
+
+  function showError(id, msg) {
+    const err = document.getElementById(id + '-error');
+    if (!err) return;
+    document.getElementById(id)?.setAttribute('aria-invalid', 'true');
+    err.textContent = msg;
+    err.classList.add('visible');
+  }
+
+  function clearError(id) {
+    const err = document.getElementById(id + '-error');
+    if (!err) return;
+    document.getElementById(id)?.removeAttribute('aria-invalid');
+    err.textContent = '';
+    err.classList.remove('visible');
+  }
+
+  function showToast(msg, type = '') {
+    const wrap = document.getElementById('toast-wrap');
+    const toast = document.createElement('div');
+    toast.className = 'toast' + (type ? ' ' + type : '');
+    toast.textContent = msg;
+    wrap.appendChild(toast);
+    setTimeout(() => toast.remove(), 3200);
+  }
+
+  /* Mock fetch intercept for feedback endpoint */
+  (function setupMockFetch() {
+    if (!window.USE_MOCK) return;
+    const _orig = window.fetch.bind(window);
+    window.fetch = async function(input, init = {}) {
+      const url    = typeof input === 'string' ? input : input.url;
+      const method = (init.method || 'GET').toUpperCase();
+      if (method === 'POST' && url === '/api/v1/feedback') {
+        const body = init.body ? JSON.parse(init.body) : {};
+        console.info('[MOCK] POST /api/v1/feedback', body);
+        await new Promise(r => setTimeout(r, 700));
+        if (Math.random() < 0.05) {
+          return new Response(JSON.stringify({ error: 'Terjadi kesalahan pada server' }), {
+            status: 500, headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        const required = ['q1','q2','q3','q4','q5'];
+        for (const k of required) {
+          if (!body[k]) {
+            return new Response(JSON.stringify({ error: `Field ${k} wajib diisi` }), {
+              status: 400, headers: { 'Content-Type': 'application/json' },
+            });
+          }
+        }
+        return new Response(JSON.stringify({ data: { id: '1', submittedAt: new Date().toISOString() } }), {
+          status: 200, headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      return _orig(input, init);
+    };
+  })();
+
+  /* Validate text fields */
+  function validateTextFields() {
+    let ok = true;
+    TEXT_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const val = el.value.trim();
+      if (val.length > MAX_CHARS) {
+        showError(id, `Maksimal ${MAX_CHARS} karakter`);
+        ok = false;
+      } else {
+        clearError(id);
+      }
+    });
+    return ok;
+  }
+
+  /* Submit */
+  document.getElementById('btn-submit').addEventListener('click', async () => {
+    if (!validateTextFields()) return;
+
+    const p1 = JSON.parse(sessionStorage.getItem('feedback_p1') || '{}');
+    const payload = {
+      ...p1,
+      q6: (document.getElementById('q6')?.value ?? '').trim(),
+      q7: (document.getElementById('q7')?.value ?? '').trim(),
+      q8: (document.getElementById('q8')?.value ?? '').trim(),
+    };
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.classList.add('loading');
+    btn.setAttribute('aria-busy', 'true');
+
+    try {
+      const res = await fetch('/api/v1/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(json.error || 'Gagal mengirim feedback');
+      }
+
+      /* Clear session data on success */
+      sessionStorage.removeItem('feedback_p1');
+
+      /* Show success modal */
+      document.getElementById('modal-success').classList.add('open');
+
+    } catch (err) {
+      showToast(err.message || 'Gagal mengirim feedback. Coba lagi.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.setAttribute('aria-busy', 'false');
+    }
+  });
+
+  initProtoBanner();
+  checkPage1Data();
+</script>
+
+</body>
+</html>

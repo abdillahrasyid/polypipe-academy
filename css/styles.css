@@ -162,13 +162,31 @@ body {
 /* ── Page header (blue, setting screens) ─────────── */
 .page-header {
   background: var(--prime-500);
-  padding: 16px 20px 20px;
+  padding: 52px 24px 24px;
   display: flex;
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
 }
-.page-title { font-size: 20px; font-weight: 600; color: #fff; }
+.page-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('../image/Ornament-header.png') no-repeat right top;
+  background-size: cover;
+  opacity: 0.25;
+  pointer-events: none;
+}
+.page-header .btn-back {
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+.page-header .btn-back:hover,
+.page-header .btn-back:active { background: transparent; }
+.page-title { font-size: 24px; font-weight: 600; color: #fff; line-height: 32px; position: relative; z-index: 1; }
 
 /* ── Progress bar ────────────────────────────────── */
 .progress-wrap  { padding: 16px 20px 0; flex-shrink: 0; }
