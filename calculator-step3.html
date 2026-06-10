@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Calculator Step 3: Heat Soak Fase 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <meta name="use-mock" content="true" />
+  <meta name="api-base-url" content="/api/v1" />
+  <script>
+    window.USE_MOCK    = document.querySelector('meta[name="use-mock"]')?.content === 'true';
+    window.API_BASE_URL = document.querySelector('meta[name="api-base-url"]')?.content ?? '/api/v1';
+  </script>
+
+  <style>
+    body { background: #fff; overflow-y: auto; }
+
+    .proto-banner {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #1d4ed8; color: #fff;
+      font-size: 11px; font-weight: 500; text-align: center;
+      padding: 4px 12px; z-index: 9999;
+      font-family: 'Inter', sans-serif; display: none;
+    }
+    .proto-banner.visible { display: block; }
+    body.has-banner .calc-header { padding-top: 65px; }
+
+    /* ── Header ── */
+    .calc-header {
+      background: var(--prime-500);
+      padding: 52px 24px 24px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .calc-header::after {
+      content: ''; position: absolute; inset: 0;
+      background: url('image/Ornament-header.png') no-repeat right top;
+      background-size: cover; opacity: 0.25; pointer-events: none;
+    }
+    .calc-header .btn-back { background: transparent; color: #fff; position: relative; z-index: 1; }
+    .calc-header .btn-back:hover, .calc-header .btn-back:active { background: transparent; }
+    .calc-header-title { font-size: 24px; font-weight: 600; color: #fff; line-height: 32px; position: relative; z-index: 1; }
+
+    /* ── Body ── */
+    .calc-body { padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── Progress bar ── */
+    .progress-bar { display: flex; gap: 6px; }
+    .progress-bar-seg { flex: 1; height: 4px; border-radius: 2px; background: #eaecf0; }
+    .progress-bar-seg.active { background: #12b76a; }
+
+    /* ── Section header ── */
+    .step-header { display: flex; gap: 6px; align-items: center; }
+    .step-icon { width: 24px; height: 24px; flex-shrink: 0; }
+    .step-title { font-size: 18px; font-weight: 600; color: #1d2939; line-height: 28px; }
+    .step-subtitle { font-size: 18px; font-weight: 600; color: #1d2939; line-height: 28px; }
+
+    /* ── Timer container ── */
+    .timer-container {
+      background: #09306a; border-radius: 8px; padding: 16px;
+      display: flex; gap: 12px; align-items: stretch;
+    }
+    .timer-tile {
+      flex: 1; background: #051d3f; border-radius: 8px; padding: 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .timer-digit {
+      font-size: 36px; font-weight: 400; line-height: 44px; letter-spacing: -0.02em;
+      color: #fff; font-family: 'Inter', sans-serif;
+    }
+    .timer-unit {
+      font-size: 14px; font-weight: 400; line-height: 20px;
+      color: #b4c5de; font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Alarm state ── */
+    @keyframes timerPulse {
+      0%, 100% { background: #09306a; }
+      50% { background: #7f1d1d; }
+    }
+    @keyframes digitShake {
+      0%, 100% { transform: none; }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
+    }
+    .timer-container.alarm { animation: timerPulse .6s ease infinite; }
+    .timer-container.alarm .timer-tile { animation: digitShake .3s ease infinite; }
+    .timer-container.alarm .timer-digit { color: #fca5a5; }
+
+    /* ── Done state ── */
+    .timer-container.done { background: #027a48; }
+    .timer-container.done .timer-tile { background: #065f46; }
+    .timer-container.done .timer-digit { color: #a7f3d0; }
+    .timer-container.done .timer-unit  { color: #6ee7b7; }
+
+    /* ── Timer note ── */
+    .timer-note {
+      font-size: 12px; font-weight: 400; color: #1d2939;
+      line-height: 18px;
+    }
+
+    /* ── Illustration card ── */
+    .illus-card {
+      background: #f2f4f7; border-radius: 8px; padding: 16px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .illus-card-title {
+      font-size: 16px; font-weight: 500; color: #1d2939; line-height: 24px;
+    }
+    .illus-img-box {
+      background: #fff; border-radius: 8px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 160px; padding: 12px;
+    }
+
+    /* ── Bottom nav ── */
+    .step-nav { display: flex; align-items: center; justify-content: flex-end; }
+    .btn-cancel {
+      background: #fff; border: 1px solid #d0d5dd; border-radius: 8px;
+      height: 48px; padding: 0 16px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 16px; font-weight: 600; color: #1d2939;
+      font-family: 'Inter', sans-serif; cursor: pointer; transition: opacity .15s;
+    }
+    .btn-cancel:active { opacity: .8; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center; padding: 60px 24px;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+    }
+    .empty-state-title { font-size: 16px; font-weight: 600; color: var(--gray-800); }
+
+    /* ── Animations ── */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .calc-header { animation: fadeIn .3s ease both; }
+    .calc-body   { animation: fadeIn .35s .1s ease both; }
+  </style>
+</head>
+<body>
+
+<div class="proto-banner" id="proto-banner" aria-live="polite">🧪 PROTOTYPE — Mock active</div>
+
+<header class="calc-header">
+  <button class="btn-back" onclick="cancelProcess()" aria-label="Kembali ke langkah sebelumnya">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+    </svg>
+  </button>
+  <h1 class="calc-header-title">Calculator</h1>
+</header>
+
+<main class="calc-body" id="main-body"></main>
+
+<footer class="footer-bar">
+  <span class="footer-copy">© 2026 polypipe.id academy</span>
+  <div class="footer-logo">
+    <img src="image/logo-polypipe-footer.png" alt="Polypipe Academy" height="30"
+         style="display:block;object-fit:contain;"
+         onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'footer-logo-text',innerHTML:'<span class=t1>POLYPIPE.id</span><span class=t2>ACADEMY</span>'}))"/>
+  </div>
+</footer>
+
+<script src="js/calculator-params.js"></script>
+<script>
+let countdownInterval = null;
+let remainingSeconds  = 0;
+
+function renderEmpty() {
+  document.getElementById('main-body').innerHTML = `
+    <div class="empty-state" role="alert">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="#d0d5dd" stroke-width="1.5"/>
+        <path d="M12 8v4M12 16h.01" stroke="#98a2b3" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <p class="empty-state-title">Tidak ada data kalkulator</p>
+      <button class="btn" style="background:var(--prime-500);color:#fff;border-radius:8px;height:44px;padding:0 24px;font-size:15px;"
+              onclick="location.href='calculator.html'">Ke Kalkulator</button>
+    </div>`;
+}
+
+function renderStep(d) {
+  const p = calcWeldingParams(d);
+  remainingSeconds = Math.round(p.t2s);
+
+  const initial = formatCountdown(remainingSeconds);
+
+  document.getElementById('main-body').innerHTML = `
+    <!-- Progress bar -->
+    <div class="progress-bar" role="progressbar" aria-label="Langkah 3 dari 5" aria-valuenow="3" aria-valuemin="1" aria-valuemax="5">
+      <div class="progress-bar-seg active"></div>
+      <div class="progress-bar-seg active"></div>
+      <div class="progress-bar-seg"></div>
+      <div class="progress-bar-seg"></div>
+      <div class="progress-bar-seg"></div>
+    </div>
+
+    <!-- Step content -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <!-- Step header -->
+      <div class="step-header">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3C10.34 3 9 4.34 9 6v6a3 3 0 006 0V6c0-1.66-1.34-3-3-3z" stroke="#344054" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M9 15.24A5 5 0 1015 15.24" stroke="#344054" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="17" r="1.5" fill="#344054"/>
+        </svg>
+        <h2 class="step-title">HEAT SOAK</h2>
+      </div>
+
+      <!-- Sub-heading -->
+      <p class="step-subtitle">Fase 2</p>
+
+      <!-- Timer -->
+      <div class="timer-container" id="timer-container"
+           role="timer" aria-live="polite"
+           aria-label="Countdown heat soak">
+        <div class="timer-tile">
+          <span class="timer-digit" id="t-hours">${initial.h}</span>
+          <span class="timer-unit">Jam</span>
+        </div>
+        <div class="timer-tile">
+          <span class="timer-digit" id="t-minutes">${initial.m}</span>
+          <span class="timer-unit">Menit</span>
+        </div>
+        <div class="timer-tile">
+          <span class="timer-digit" id="t-seconds">${initial.s}</span>
+          <span class="timer-unit">Detik</span>
+        </div>
+      </div>
+
+      <p class="timer-note">
+        Halaman atau step selanjutnya menunggu waktu habis. alarm muncul selama 10 detik terakhir
+      </p>
+
+      <!-- Illustration -->
+      <div class="illus-card" role="region" aria-label="Ilustrasi siklus pengelasan">
+        <p class="illus-card-title">Ilustrasi</p>
+        <div class="illus-img-box">
+          ${buildCycleSVGWithHighlight(p, 1)}
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="step-nav" aria-label="Navigasi langkah">
+      <button class="btn-cancel" onclick="cancelProcess()" aria-label="Batalkan dan kembali ke kalkulator">
+        Batalkan Proses
+      </button>
+    </nav>
+  `;
+
+  startCountdown();
+}
+
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+
+  countdownInterval = setInterval(() => {
+    remainingSeconds--;
+    updateTimerDisplay();
+
+    if (remainingSeconds <= 0) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+      onTimerDone();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const parts = formatCountdown(remainingSeconds);
+  const hEl = document.getElementById('t-hours');
+  const mEl = document.getElementById('t-minutes');
+  const sEl = document.getElementById('t-seconds');
+  const container = document.getElementById('timer-container');
+  if (!hEl || !mEl || !sEl || !container) return;
+
+  hEl.textContent = parts.h;
+  mEl.textContent = parts.m;
+  sEl.textContent = parts.s;
+
+  if (remainingSeconds <= 10 && remainingSeconds > 0) {
+    container.classList.add('alarm');
+    container.classList.remove('done');
+    container.setAttribute('aria-label', `Alarm! ${remainingSeconds} detik tersisa`);
+  } else if (remainingSeconds <= 0) {
+    container.classList.remove('alarm');
+    container.classList.add('done');
+  } else {
+    container.classList.remove('alarm', 'done');
+  }
+}
+
+function onTimerDone() {
+  const container = document.getElementById('timer-container');
+  if (container) {
+    container.classList.remove('alarm');
+    container.classList.add('done');
+    container.setAttribute('aria-label', 'Heat soak selesai');
+  }
+
+  // Replace cancel button with "Selanjutnya" after timer done
+  const nav = document.querySelector('.step-nav');
+  if (nav) {
+    nav.innerHTML = `
+      <button class="btn-cancel" onclick="cancelProcess()" style="margin-right:auto;">
+        Batalkan Proses
+      </button>
+      <button style="background:#027a48;border:none;border-radius:8px;height:48px;padding:0 16px;
+                     display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;
+                     color:#fff;font-family:'Inter',sans-serif;cursor:pointer;"
+              onclick="alert('Step selanjutnya (Heater Removal) belum tersedia.')"
+              aria-label="Lanjut ke langkah berikutnya">
+        Selanjutnya
+        <svg width="20" height="20" fill="none" aria-hidden="true">
+          <path d="M4 10h12M10 4l6 6-6 6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>`;
+    nav.style.justifyContent = 'space-between';
+  }
+}
+
+function cancelProcess() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  location.href = 'calculator.html';
+}
+
+(function init() {
+  initProtoBanner();
+  const raw = sessionStorage.getItem('calc_input');
+  if (!raw) { renderEmpty(); return; }
+  try { renderStep(JSON.parse(raw)); } catch { renderEmpty(); }
+})();
+</script>
+
+</body>
+</html>

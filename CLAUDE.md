@@ -28,7 +28,19 @@ Untuk membuat token terstruktur: jalankan `/imp.tokens init`.
 ## Struktur Direktori
 ```
 .
-├── index.html          # SPA prototype tunggal — semua screen dalam satu file
+├── index.html              # SPA prototype tunggal — semua screen dalam satu file
+├── calculator.html         # Kalkulator butt fusion — input parameter
+├── calculator-result.html  # Hasil kalkulasi — parameter lengkap welding
+├── calculator-step1.html   # BEAD UP — target tekanan & ukuran bead
+├── calculator-step2.html   # HEAT SOAK Fase 1 — instruksi kurangi tekanan
+├── calculator-step3.html   # HEAT SOAK Fase 2 — countdown timer heat soak
+├── js/
+│   ├── calculator-params.js   # Shared: calcWeldingParams, buildCycleSVGWithHighlight, formatCountdown, initProtoBanner
+│   ├── api/                   # API wrappers (fetch intercept untuk mock toggle)
+│   ├── contracts/             # Contract objects + validators
+│   ├── mocks/                 # Mock data + business rule enforcement
+│   ├── config/page-status.js  # Mapping pathname → status dev per halaman
+│   └── prototype-banner.js    # Status indicator segitiga (In Progress / Ready / Done)
 └── .claude/
     ├── agents/         # a11y-auditor, design-reviewer, html-prototype-engineer
     ├── commands/       # imp.* commands

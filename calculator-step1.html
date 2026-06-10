@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polypipe Academy – Calculator Step 1: Bead Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <meta name="use-mock" content="true" />
+  <meta name="api-base-url" content="/api/v1" />
+  <script>
+    window.USE_MOCK    = document.querySelector('meta[name="use-mock"]')?.content === 'true';
+    window.API_BASE_URL = document.querySelector('meta[name="api-base-url"]')?.content ?? '/api/v1';
+  </script>
+
+  <style>
+    body { background: #fff; overflow-y: auto; }
+
+    .proto-banner {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #1d4ed8; color: #fff;
+      font-size: 11px; font-weight: 500; text-align: center;
+      padding: 4px 12px; z-index: 9999;
+      font-family: 'Inter', sans-serif; display: none;
+    }
+    .proto-banner.visible { display: block; }
+    body.has-banner .calc-header { padding-top: 65px; }
+
+    /* ── Header ── */
+    .calc-header {
+      background: var(--prime-500);
+      padding: 52px 24px 24px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .calc-header::after {
+      content: ''; position: absolute; inset: 0;
+      background: url('image/Ornament-header.png') no-repeat right top;
+      background-size: cover; opacity: 0.25; pointer-events: none;
+    }
+    .calc-header .btn-back { background: transparent; color: #fff; position: relative; z-index: 1; }
+    .calc-header .btn-back:hover, .calc-header .btn-back:active { background: transparent; }
+    .calc-header-title { font-size: 24px; font-weight: 600; color: #fff; line-height: 32px; position: relative; z-index: 1; }
+
+    /* ── Body ── */
+    .calc-body { padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── Progress bar ── */
+    .progress-bar { display: flex; gap: 6px; }
+    .progress-bar-seg { flex: 1; height: 4px; border-radius: 2px; background: #eaecf0; }
+    .progress-bar-seg.active { background: #12b76a; }
+
+    /* ── Section header ── */
+    .step-header { display: flex; gap: 6px; align-items: center; }
+    .step-icon { width: 24px; height: 24px; flex-shrink: 0; }
+    .step-title { font-size: 18px; font-weight: 600; color: #1d2939; line-height: 28px; }
+
+    /* ── Dark gradient cards ── */
+    .info-card {
+      border-radius: 8px; padding: 12px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 4px; color: #fff; text-align: center; width: 100%;
+    }
+    .info-card-gradient-1 {
+      background: linear-gradient(134deg, #051d3f 3%, #0d4ca5 114%);
+    }
+    .info-card-gradient-2 {
+      background: linear-gradient(168deg, #051d3f 21%, #0d4ca5 121%);
+    }
+    .info-card-label { font-size: 16px; font-weight: 400; line-height: 24px; }
+    .info-card-value { font-size: 30px; font-weight: 500; line-height: 38px; }
+
+    /* ── Illustration card ── */
+    .illus-card {
+      background: #f2f4f7; border-radius: 8px; padding: 12px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .illus-img-box {
+      background: #fff; border-radius: 8px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 107px; padding: 12px;
+    }
+    .illus-img-box.chart { min-height: 160px; }
+
+    /* ── Pipe cross-section SVG ── */
+    .pipe-svg { width: 100%; max-width: 200px; }
+
+    /* ── Nav buttons ── */
+    .step-nav {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .btn-prev {
+      background: #fff; border: 1px solid #d0d5dd; border-radius: 8px;
+      height: 48px; padding: 0 16px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 16px; font-weight: 600; color: #1d2939;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-prev:active { opacity: .8; }
+    .btn-next {
+      background: #027a48; border: none; border-radius: 8px;
+      height: 48px; padding: 0 16px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 16px; font-weight: 600; color: #fff;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-next:active { opacity: .85; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center; padding: 60px 24px;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+    }
+    .empty-state-title { font-size: 16px; font-weight: 600; color: var(--gray-800); }
+
+    /* ── Animations ── */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .calc-header { animation: fadeIn .3s ease both; }
+    .calc-body   { animation: fadeIn .35s .1s ease both; }
+  </style>
+</head>
+<body>
+
+<div class="proto-banner" id="proto-banner" aria-live="polite">🧪 PROTOTYPE — Mock active</div>
+
+<!-- SVG sprites -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="ico-arrow-left" viewBox="0 0 20 20" fill="none">
+    <path d="M16 10H4M10 4l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="ico-arrow-right" viewBox="0 0 20 20" fill="none">
+    <path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="ico-bead-up" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M17 7l-2 2M7 7l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<header class="calc-header">
+  <button class="btn-back" onclick="location.href='calculator-result.html'" aria-label="Kembali ke hasil kalkulator">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+    </svg>
+  </button>
+  <h1 class="calc-header-title">Calculator</h1>
+</header>
+
+<main class="calc-body" id="main-body"></main>
+
+<footer class="footer-bar">
+  <span class="footer-copy">© 2026 polypipe.id academy</span>
+  <div class="footer-logo">
+    <img src="image/logo-polypipe-footer.png" alt="Polypipe Academy" height="30"
+         style="display:block;object-fit:contain;"
+         onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'footer-logo-text',innerHTML:'<span class=t1>POLYPIPE.id</span><span class=t2>ACADEMY</span>'}))"/>
+  </div>
+</footer>
+
+<script src="js/calculator-params.js"></script>
+<script>
+function buildPipeSVG() {
+  return `<svg viewBox="0 0 220 90" xmlns="http://www.w3.org/2000/svg" class="pipe-svg" role="img" aria-label="Ilustrasi penampang pipa butt fusion">
+    <!-- Annotation A -->
+    <text x="110" y="10" font-size="11" font-family="Inter,sans-serif" fill="#344054" text-anchor="middle" font-weight="600">A</text>
+    <line x1="100" y1="14" x2="100" y2="22" stroke="#344054" stroke-width="1" marker-end="url(#arr)"/>
+    <line x1="120" y1="14" x2="120" y2="22" stroke="#344054" stroke-width="1" marker-end="url(#arr)"/>
+    <line x1="100" y1="14" x2="120" y2="14" stroke="#344054" stroke-width="1"/>
+    <!-- Left pipe body -->
+    <rect x="10" y="30" width="85" height="40" rx="3" fill="#e0eaf4" stroke="#344054" stroke-width="1.5"/>
+    <rect x="10" y="42" width="85" height="16" rx="2" fill="#fff" stroke="#b3d7fb" stroke-width="1"/>
+    <!-- Gap between pipes -->
+    <line x1="97" y1="28" x2="97" y2="72" stroke="#98a2b3" stroke-width="1" stroke-dasharray="3 2"/>
+    <line x1="123" y1="28" x2="123" y2="72" stroke="#98a2b3" stroke-width="1" stroke-dasharray="3 2"/>
+    <!-- Right pipe body -->
+    <rect x="125" y="30" width="85" height="40" rx="3" fill="#e0eaf4" stroke="#344054" stroke-width="1.5"/>
+    <rect x="125" y="42" width="85" height="16" rx="2" fill="#fff" stroke="#b3d7fb" stroke-width="1"/>
+    <defs>
+      <marker id="arr" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto">
+        <path d="M0,0 L0,4 L4,2 z" fill="#344054"/>
+      </marker>
+    </defs>
+  </svg>`;
+}
+
+function renderEmpty() {
+  document.getElementById('main-body').innerHTML = `
+    <div class="empty-state" role="alert">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="#d0d5dd" stroke-width="1.5"/>
+        <path d="M12 8v4M12 16h.01" stroke="#98a2b3" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <p class="empty-state-title">Tidak ada data kalkulator</p>
+      <button class="btn" style="background:var(--prime-500);color:#fff;border-radius:8px;height:44px;padding:0 24px;font-size:15px;"
+              onclick="location.href='calculator.html'">Ke Kalkulator</button>
+    </div>`;
+}
+
+function renderStep(d) {
+  const p = calcWeldingParams(d);
+  document.getElementById('main-body').innerHTML = `
+    <!-- Progress bar -->
+    <div class="progress-bar" role="progressbar" aria-label="Langkah 1 dari 5" aria-valuenow="1" aria-valuemin="1" aria-valuemax="5">
+      <div class="progress-bar-seg active"></div>
+      <div class="progress-bar-seg"></div>
+      <div class="progress-bar-seg"></div>
+      <div class="progress-bar-seg"></div>
+      <div class="progress-bar-seg"></div>
+    </div>
+
+    <!-- Step content -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <!-- Step header -->
+      <div class="step-header">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="8.5" stroke="#344054" stroke-width="1.5"/>
+          <path d="M12 8v4.5l2.5 2.5" stroke="#344054" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16.5 5.5L15 7M7.5 5.5L9 7" stroke="#344054" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <h2 class="step-title">BEAD UP</h2>
+      </div>
+
+      <!-- Value cards -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="info-card info-card-gradient-1" role="region" aria-label="Target tekanan bead-up">
+          <span class="info-card-label">Tekan Sampai</span>
+          <span class="info-card-value">${p.p1pt} Bar</span>
+        </div>
+        <div class="info-card info-card-gradient-2" role="region" aria-label="Target ukuran inisial bead">
+          <span class="info-card-label">Tunggu Sampai inisial bead</span>
+          <span class="info-card-value">${p.A_bead} mm</span>
+        </div>
+
+        <!-- Illustration -->
+        <div class="illus-card" role="region" aria-label="Ilustrasi pengelasan">
+          <div class="illus-img-box">
+            ${buildPipeSVG()}
+          </div>
+          <div class="illus-img-box chart">
+            ${buildCycleSVGWithHighlight(p, 0)}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="step-nav" aria-label="Navigasi langkah">
+      <button class="btn-prev" onclick="location.href='calculator-result.html'" aria-label="Kembali ke halaman sebelumnya">
+        <svg width="20" height="20" fill="none" aria-hidden="true"><use href="#ico-arrow-left" stroke="#1d2939"/></svg>
+        Sebelumnya
+      </button>
+      <button class="btn-next" onclick="location.href='calculator-step2.html'" aria-label="Lanjut ke langkah berikutnya">
+        Selanjutnya
+        <svg width="20" height="20" fill="none" aria-hidden="true"><use href="#ico-arrow-right" stroke="#fff"/></svg>
+      </button>
+    </nav>
+  `;
+}
+
+(function init() {
+  initProtoBanner();
+  const raw = sessionStorage.getItem('calc_input');
+  if (!raw) { renderEmpty(); return; }
+  try { renderStep(JSON.parse(raw)); } catch { renderEmpty(); }
+})();
+</script>
+
+</body>
+</html>
