@@ -26,27 +26,25 @@
       z-index: 0;
     }
 
-    /* top section */
-    .top-section {
-      padding: 64px 32px 0;
+    /* center section — logo + tagline */
+    .center-section {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      padding: 0 32px;
       position: relative;
       z-index: 1;
     }
 
     .brand-logo {
       width: 160px;
-      margin-bottom: 20px;
     }
 
-    /* middle tagline */
-    .mid-section {
-      padding: 0 32px;
+    .tagline-block {
+      margin-top: 24px;
       text-align: center;
-      position: relative;
-      z-index: 1;
     }
     .tagline {
       font-size: 20px;
@@ -100,15 +98,13 @@
 
 <div class="bg-overlay" aria-hidden="true"></div>
 
-<!-- top: brand -->
-<div class="top-section">
+<!-- center: logo + tagline -->
+<div class="center-section">
   <img src="image/Logo Polypipe white.png" alt="Polypipe Academy" class="brand-logo" />
-</div>
-
-<!-- middle: tagline -->
-<div class="mid-section">
-  <h1 class="tagline">Panduan pengelasan pipa HDPE <em>standar internasional</em></h1>
-  <p class="sub-tagline">Referensi teknis untuk profesional industri pipa — kapan saja, di mana saja.</p>
+  <div class="tagline-block">
+    <h1 class="tagline">Panduan pengelasan pipa HDPE <em>standar internasional</em></h1>
+    <p class="sub-tagline">Referensi teknis untuk profesional industri pipa kapan saja, di mana saja.</p>
+  </div>
 </div>
 
 <!-- bottom: CTAs -->

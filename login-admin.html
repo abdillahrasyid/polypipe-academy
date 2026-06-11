@@ -340,34 +340,6 @@
     }
     .shake { animation: shake .25s ease; }
 
-    /* ── Prototype banner ─────────────────────────── */
-    .proto-banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: #1c1917;
-      color: #fef3c7;
-      font-size: 12px;
-      font-family: 'Inter', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 6px 16px;
-      letter-spacing: .2px;
-    }
-    .proto-banner .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #fbbf24;
-      flex-shrink: 0;
-    }
-
-    /* Push content below banner */
-    body { padding-top: 30px; }
-
     /* ── Responsive ─────────────────────────────── */
     @media (max-width: 768px) {
       .brand-panel { display: none; }
@@ -376,12 +348,6 @@
   </style>
 </head>
 <body>
-
-  <!-- Prototype banner -->
-  <div class="proto-banner" role="status" aria-live="polite">
-    <span class="dot"></span>
-    🧪 PROTOTYPE — Mock active
-  </div>
 
   <div class="split-wrap">
 

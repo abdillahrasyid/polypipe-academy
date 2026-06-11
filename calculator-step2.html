@@ -19,16 +19,6 @@
   <style>
     body { background: #fff; overflow-y: auto; }
 
-    .proto-banner {
-      position: fixed; top: 0; left: 0; right: 0;
-      background: #1d4ed8; color: #fff;
-      font-size: 11px; font-weight: 500; text-align: center;
-      padding: 4px 12px; z-index: 9999;
-      font-family: 'Inter', sans-serif; display: none;
-    }
-    .proto-banner.visible { display: block; }
-    body.has-banner .calc-header { padding-top: 65px; }
-
     /* ── Header ── */
     .calc-header {
       background: var(--prime-500);
@@ -137,8 +127,6 @@
   </style>
 </head>
 <body>
-
-<div class="proto-banner" id="proto-banner" aria-live="polite">🧪 PROTOTYPE — Mock active</div>
 
 <svg style="display:none" aria-hidden="true">
   <symbol id="ico-arrow-left" viewBox="0 0 20 20" fill="none">
@@ -267,7 +255,6 @@ function handleOk() {
 }
 
 (function init() {
-  initProtoBanner();
   const raw = sessionStorage.getItem('calc_input');
   if (!raw) { renderEmpty(); return; }
   try { renderStep(JSON.parse(raw)); } catch { renderEmpty(); }
